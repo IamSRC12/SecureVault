@@ -1,0 +1,37 @@
+{
+  "appId": "com.securevault.app",
+  "productName": "SecureVault",
+  "directories": {
+    "output": "dist"
+  },
+  "files": [
+    "out/**/*",
+    "package.json"
+  ],
+  "win": {
+    "icon": "build/icon.png",
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      },
+      {
+        "target": "portable",
+        "arch": [
+          "x64"
+        ]
+      }
+    ]
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "SecureVault"
+  },
+  "asar": true,
+  "publish": null
+}
