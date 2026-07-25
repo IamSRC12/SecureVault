@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import {
   Shield, Key, Eye, EyeOff, Copy, Check, RefreshCw, AlertTriangle,
-  Download, Upload, Trash2, Circle, Save, Info,
+  Download, Upload, Trash2, Circle, Save, Info, Sparkles, Lock, ShieldCheck
 } from 'lucide-react'
 import { evaluatePasswordStrength } from '../../services/passwordUtils'
 import { useAppStore } from '../../store/appStore'
@@ -31,7 +31,6 @@ export default function SettingsView(): React.ReactElement {
 
   // Data
   const [clearInput,  setClearInput]   = useState('')
-  const [clearConfirm, setClearConfirm] = useState(false)
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type })
@@ -53,11 +52,9 @@ export default function SettingsView(): React.ReactElement {
 
       if (!result) return showToast('Current password is incorrect', 'error')
 
-      // Save new hash + salt
       await window.electronAPI.db.setSetting('master_password_hash', result.newHash)
       await window.electronAPI.db.setSetting('master_password_salt', result.newSalt)
 
-      // Re-encrypt all credentials with new key
       if (encryptionKey) {
         const keyHex = encryptionKey.toString('hex')
         const creds = await window.electronAPI.db.getAllCredentials(keyHex)
@@ -73,12 +70,11 @@ export default function SettingsView(): React.ReactElement {
       }
 
       await window.electronAPI.db.addAuditLog('CHANGE_MASTER_PASSWORD', null, true)
-      showToast('Master password changed successfully. Please log in again.')
+      showToast('Master password changed successfully. Logging out...')
       setCpCurrent(''); setCpNew(''); setCpConfirm('')
 
-      // Force re-login
       setTimeout(() => lock(), 1500)
-    } catch (err) {
+    } catch {
       showToast('Failed to change password', 'error')
     } finally {
       setCpLoading(false)
@@ -108,11 +104,10 @@ export default function SettingsView(): React.ReactElement {
       setTokenCopied(true)
       setTimeout(() => setTokenCopied(false), 2000)
     } catch {
-      // ignore
+      // fallback
     }
   }
 
-  // ─── Extension Token Setup ──────────────────────────────────────────────
   const [tokenVal, setTokenVal] = useState('')
   useEffect(() => {
     async function loadToken() {
@@ -161,88 +156,96 @@ export default function SettingsView(): React.ReactElement {
   }
 
   const strengthOfNew = evaluatePasswordStrength(cpNew)
-  const strengthColor = strengthOfNew.strength === 'strong' ? '#22c55e' : strengthOfNew.strength === 'medium' ? '#f59e0b' : '#ef4444'
+  const strengthColor = strengthOfNew.strength === 'strong' ? '#4ade80' : strengthOfNew.strength === 'medium' ? '#fbbf24' : '#f87171'
 
-  const TABS: { id: Tab; label: string }[] = [
-    { id: 'security', label: 'Security' },
-    { id: 'extension', label: 'Extension' },
-    { id: 'data', label: 'Data' },
-    { id: 'info', label: 'Info' },
+  const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
+    { id: 'security', label: 'Security', icon: <Shield className="w-4 h-4" /> },
+    { id: 'extension', label: 'Extension', icon: <Key className="w-4 h-4" /> },
+    { id: 'data', label: 'Vault Data', icon: <Download className="w-4 h-4" /> },
+    { id: 'info', label: 'About', icon: <Info className="w-4 h-4" /> },
   ]
 
   return (
-    <div className="p-8 max-w-2xl">
-      <h1 className="text-2xl font-bold text-[#f1f5f9] mb-6">Settings</h1>
+    <div className="p-6 sm:p-8 max-w-4xl mx-auto space-y-6">
+      <div>
+        <h1 className="text-2xl font-black text-white tracking-tight">Settings</h1>
+        <p className="text-xs text-slate-400 mt-1">Manage security, browser extension, and vault data</p>
+      </div>
 
-      {/* Tab nav */}
-      <div className="flex items-center gap-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-1 mb-6">
+      {/* Tab Nav */}
+      <div className="flex items-center gap-2 bg-[#121420]/80 border border-white/10 rounded-2xl p-1.5 shadow-lg">
         {TABS.map(t => (
-          <button key={t.id} onClick={() => setActiveTab(t.id)}
-            className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-              activeTab === t.id ? 'bg-[#6366f1] text-white' : 'text-[#94a3b8] hover:text-[#f1f5f9]'
-            }`}>
-            {t.label}
+          <button
+            key={t.id}
+            onClick={() => setActiveTab(t.id)}
+            className={`flex-1 py-2.5 px-3 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 ${
+              activeTab === t.id
+                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/20'
+                : 'text-slate-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            {t.icon}
+            <span>{t.label}</span>
           </button>
         ))}
       </div>
 
-      {/* ── Security Tab ──────────────────────────────────────────────────── */}
+      {/* Security Tab */}
       {activeTab === 'security' && (
         <div className="space-y-6">
-          {/* Change Master Password */}
-          <Section title="Change Master Password" icon={<Shield className="w-4 h-4 text-[#6366f1]" />}>
-            <div className="space-y-3">
-              <PasswordInput id="s-cur-pwd" label="Current Password" value={cpCurrent} onChange={setCpCurrent} show={showCpCur} onToggle={() => setShowCpCur(v => !v)} />
-              <PasswordInput id="s-new-pwd" label="New Password" value={cpNew} onChange={setCpNew} show={showCpNew} onToggle={() => setShowCpNew(v => !v)} />
+          <Section title="Change Master Password" icon={<Shield className="w-5 h-5 text-indigo-400" />}>
+            <div className="space-y-4 max-w-md">
+              <PasswordInput id="s-cur-pwd" label="Current Master Password" value={cpCurrent} onChange={setCpCurrent} show={showCpCur} onToggle={() => setShowCpCur(v => !v)} />
+              <PasswordInput id="s-new-pwd" label="New Master Password" value={cpNew} onChange={setCpNew} show={showCpNew} onToggle={() => setShowCpNew(v => !v)} />
               {cpNew && (
-                <div className="mt-1">
-                  <div className="h-1 bg-[#2a2a2a] rounded-full">
+                <div className="bg-white/[0.03] p-2.5 rounded-xl border border-white/5">
+                  <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
                     <div className="h-full rounded-full transition-all" style={{ width: `${strengthOfNew.score}%`, backgroundColor: strengthColor }} />
                   </div>
                 </div>
               )}
-              <PasswordInput id="s-conf-pwd" label="Confirm New Password" value={cpConfirm} onChange={setCpConfirm} show={showCpNew} onToggle={() => setShowCpNew(v => !v)} />
-              <button onClick={handleChangePwd} disabled={cpLoading} className="btn-primary">
-                {cpLoading ? 'Changing...' : <><Save className="w-4 h-4" /> Change Password</>}
+              <PasswordInput id="s-conf-pwd" label="Confirm New Master Password" value={cpConfirm} onChange={setCpConfirm} show={showCpNew} onToggle={() => setShowCpNew(v => !v)} />
+              <button onClick={handleChangePwd} disabled={cpLoading} className="btn-primary mt-2">
+                {cpLoading ? 'Updating Password...' : <><Save className="w-4 h-4" /> Save New Password</>}
               </button>
             </div>
           </Section>
 
-          {/* Auto-lock */}
-          <Section title="Auto-Lock Timeout" icon={<Shield className="w-4 h-4 text-[#f59e0b]" />}>
+          <Section title="Auto-Lock Inactivity Timeout" icon={<Lock className="w-5 h-5 text-amber-400" />}>
+            <p className="text-xs text-slate-400 mb-3">Automatically lock your vault after a period of user inactivity.</p>
             <select
               value={autoLockTimeout}
               onChange={async (e) => {
                 const val = parseInt(e.target.value)
                 setAutoLockTimeout(val)
                 await window.electronAPI.db.setSetting('auto_lock_timeout', String(val))
+                showToast('Auto-lock timeout updated')
               }}
-              className="input-field w-auto"
+              className="input-field max-w-xs cursor-pointer font-semibold"
             >
-              <option value={0}>Never</option>
-              <option value={1}>1 minute</option>
-              <option value={5}>5 minutes</option>
-              <option value={15}>15 minutes</option>
-              <option value={30}>30 minutes</option>
-              <option value={60}>1 hour</option>
+              <option value={0} className="bg-[#141622]">Never Lock</option>
+              <option value={1} className="bg-[#141622]">1 Minute Inactivity</option>
+              <option value={5} className="bg-[#141622]">5 Minutes Inactivity</option>
+              <option value={15} className="bg-[#141622]">15 Minutes Inactivity</option>
+              <option value={30} className="bg-[#141622]">30 Minutes Inactivity</option>
+              <option value={60} className="bg-[#141622]">1 Hour Inactivity</option>
             </select>
           </Section>
         </div>
       )}
 
-      {/* ── Extension Tab ─────────────────────────────────────────────────── */}
+      {/* Extension Tab */}
       {activeTab === 'extension' && (
         <div className="space-y-6">
-          <Section title="Extension Connection" icon={<Key className="w-4 h-4 text-[#6366f1]" />}>
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 p-3 bg-[#0f0f0f] rounded-lg border border-[#2a2a2a]">
-                <Circle className="w-2.5 h-2.5" fill="#22c55e" color="#22c55e" />
-                <span className="text-sm text-[#94a3b8]">App is running — extension can connect</span>
+          <Section title="Chrome Extension Integration" icon={<Key className="w-5 h-5 text-purple-400" />}>
+            <div className="space-y-5">
+              <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                <div className="w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_8px_#22c55e]" />
+                <span className="text-xs font-semibold text-emerald-300">Desktop API server listening on localhost:45678</span>
               </div>
 
-              {/* Token display */}
               <div>
-                <label className="block text-sm font-medium text-[#94a3b8] mb-1.5">Extension Token</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Extension Secret Token</label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <input
@@ -252,12 +255,12 @@ export default function SettingsView(): React.ReactElement {
                       className="input-field pr-10 font-mono text-xs"
                     />
                     <button onClick={() => setTokenVisible(v => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#475569] hover:text-[#94a3b8]">
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors">
                       {tokenVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
-                  <button onClick={handleCopyToken} className={`btn-secondary px-3 ${tokenCopied ? 'border-[#22c55e]/30 text-[#22c55e]' : ''}`}>
-                    {tokenCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  <button onClick={handleCopyToken} className={`btn-secondary px-3.5 ${tokenCopied ? 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10' : ''}`}>
+                    {tokenCopied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
@@ -265,35 +268,26 @@ export default function SettingsView(): React.ReactElement {
               <button onClick={handleRegenerateToken} className="btn-secondary">
                 <RefreshCw className="w-4 h-4" /> Regenerate Token
               </button>
-
-              <div className="p-3 bg-[#6366f1]/5 border border-[#6366f1]/20 rounded-lg text-xs text-[#94a3b8]">
-                <p className="font-medium text-[#6366f1] mb-1">How to connect:</p>
-                <ol className="space-y-1 list-decimal list-inside">
-                  <li>Copy the token above</li>
-                  <li>Click the SecureVault icon in your browser</li>
-                  <li>Paste the token in the extension settings</li>
-                </ol>
-              </div>
             </div>
           </Section>
         </div>
       )}
 
-      {/* ── Data Tab ──────────────────────────────────────────────────────── */}
+      {/* Data Tab */}
       {activeTab === 'data' && (
         <div className="space-y-6">
-          <Section title="Export Vault" icon={<Download className="w-4 h-4 text-[#6366f1]" />}>
-            <p className="text-sm text-[#94a3b8] mb-3">
-              Download an encrypted backup of your vault. You&apos;ll need your master password to restore it.
+          <Section title="Export Encrypted Backup" icon={<Download className="w-5 h-5 text-indigo-400" />}>
+            <p className="text-xs text-slate-400 mb-4 max-w-lg">
+              Download an encrypted JSON snapshot of your credentials and API keys. Requires your master password to decrypt.
             </p>
             <button onClick={handleExport} className="btn-secondary">
-              <Download className="w-4 h-4" /> Export Vault
+              <Download className="w-4 h-4" /> Export Encrypted Vault
             </button>
           </Section>
 
-          <Section title="Import Vault" icon={<Upload className="w-4 h-4 text-[#6366f1]" />}>
-            <p className="text-sm text-[#94a3b8] mb-3">
-              Restore from a SecureVault backup file.
+          <Section title="Import Vault Snapshot" icon={<Upload className="w-5 h-5 text-indigo-400" />}>
+            <p className="text-xs text-slate-400 mb-4 max-w-lg">
+              Restore credentials from a previously exported `.json` backup file.
             </p>
             <button
               onClick={() => {
@@ -304,7 +298,7 @@ export default function SettingsView(): React.ReactElement {
                   const file = (e.target as HTMLInputElement).files?.[0]
                   if (!file) return
                   const text = await file.text()
-                  const pwd  = prompt('Enter master password for this backup:')
+                  const pwd  = prompt('Enter master password for backup:')
                   if (!pwd) return
                   try {
                     const decrypted = await window.electronAPI.auth.decryptVaultExport(text, pwd)
@@ -323,26 +317,23 @@ export default function SettingsView(): React.ReactElement {
                         }
                       }
                     }
-                    
-                    showToast('Import successful!')
-                    await window.electronAPI.db.addAuditLog('IMPORT_VAULT', file.name, true)
-                  } catch (err) {
-                    showToast('Failed to decrypt backup — wrong password?', 'error')
+                    showToast('Vault restored successfully!')
+                  } catch {
+                    showToast('Failed to decrypt backup — invalid password?', 'error')
                   }
                 }
                 input.click()
               }}
               className="btn-secondary"
-
             >
-              <Upload className="w-4 h-4" /> Import Vault
+              <Upload className="w-4 h-4" /> Import Backup File
             </button>
           </Section>
 
-          <Section title="Clear All Data" icon={<Trash2 className="w-4 h-4 text-[#ef4444]" />}>
-            <div className="p-4 bg-[#ef4444]/5 border border-[#ef4444]/20 rounded-lg">
-              <p className="text-sm text-[#94a3b8] mb-3">
-                <span className="text-[#ef4444] font-medium">Warning:</span> This permanently deletes ALL data including passwords, API keys, and settings. This cannot be undone.
+          <Section title="Danger Zone — Wipe Vault" icon={<Trash2 className="w-5 h-5 text-rose-400" />}>
+            <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl space-y-3">
+              <p className="text-xs text-rose-300 font-medium">
+                Warning: This will permanently purge all credentials, API keys, and settings from this machine.
               </p>
               <div className="flex gap-3">
                 <input
@@ -350,14 +341,14 @@ export default function SettingsView(): React.ReactElement {
                   value={clearInput}
                   onChange={e => setClearInput(e.target.value)}
                   placeholder='Type "DELETE" to confirm'
-                  className="input-field flex-1 border-[#ef4444]/30"
+                  className="input-field flex-1 border-rose-500/30 text-rose-300"
                 />
                 <button
                   onClick={handleClearData}
                   disabled={clearInput !== 'DELETE'}
-                  className="btn-danger disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="btn-danger disabled:opacity-40"
                 >
-                  <Trash2 className="w-4 h-4" /> Clear Everything
+                  <Trash2 className="w-4 h-4" /> Wipe All Data
                 </button>
               </div>
             </div>
@@ -365,30 +356,27 @@ export default function SettingsView(): React.ReactElement {
         </div>
       )}
 
-      {/* ── Info Tab ──────────────────────────────────────────────────────── */}
+      {/* Info Tab */}
       {activeTab === 'info' && (
-        <div className="space-y-4">
-          <Section title="About SecureVault" icon={<Info className="w-4 h-4 text-[#6366f1]" />}>
-            <div className="space-y-3 text-sm text-[#94a3b8]">
-              <p>Version: <span className="text-[#f1f5f9] font-medium">v{appVersion}</span></p>
-              <p>Encryption: <span className="text-[#f1f5f9]">AES-256-GCM</span></p>
-              <p>Key Derivation: <span className="text-[#f1f5f9]">PBKDF2-SHA256 (100,000 iterations)</span></p>
-              <p>Password Hashing: <span className="text-[#f1f5f9]">argon2id</span></p>
-              <p>Database: <span className="text-[#f1f5f9]">SQLite (local only)</span></p>
-            </div>
-          </Section>
-        </div>
+        <Section title="Security Specs & Diagnostics" icon={<Info className="w-5 h-5 text-indigo-400" />}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <InfoBox label="App Version" value={`v${appVersion}`} />
+            <InfoBox label="Vault Encryption" value="AES-256-GCM" />
+            <InfoBox label="Key Derivation" value="PBKDF2-SHA256 (100k rounds)" />
+            <InfoBox label="Password Hashing" value="Argon2id" />
+            <InfoBox label="Storage Engine" value="Local SQLite (WAL Mode)" />
+            <InfoBox label="API Binding" value="127.0.0.1:45678 (Localhost)" />
+          </div>
+        </Section>
       )}
 
-      {/* Toast notification */}
+      {/* Toast popup */}
       {toast && (
-        <div className={`fixed bottom-6 right-6 flex items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium shadow-xl animate-in ${
-          toast.type === 'success'
-            ? 'bg-[#22c55e] text-white'
-            : 'bg-[#ef4444] text-white'
+        <div className={`fixed bottom-6 right-6 flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-bold shadow-2xl animate-in z-50 ${
+          toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'
         }`}>
           {toast.type === 'success' ? <Check className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
-          {toast.msg}
+          <span>{toast.msg}</span>
         </div>
       )}
     </div>
@@ -397,11 +385,20 @@ export default function SettingsView(): React.ReactElement {
 
 function Section({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }): React.ReactElement {
   return (
-    <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-5">
-      <h2 className="flex items-center gap-2 text-sm font-semibold text-[#f1f5f9] mb-4">
-        {icon} {title}
+    <div className="bg-[#121420]/80 border border-white/10 rounded-2xl p-6 shadow-xl">
+      <h2 className="flex items-center gap-2.5 text-sm font-bold text-white mb-4">
+        {icon} <span>{title}</span>
       </h2>
       {children}
+    </div>
+  )
+}
+
+function InfoBox({ label, value }: { label: string; value: string }): React.ReactElement {
+  return (
+    <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/5">
+      <span className="text-slate-500 block mb-1 font-semibold">{label}</span>
+      <span className="text-slate-200 font-bold font-mono">{value}</span>
     </div>
   )
 }
@@ -413,12 +410,12 @@ function PasswordInput({
 }): React.ReactElement {
   return (
     <div>
-      <label className="block text-xs font-medium text-[#94a3b8] mb-1">{label}</label>
+      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">{label}</label>
       <div className="relative">
         <input id={id} type={show ? 'text' : 'password'} value={value}
           onChange={e => onChange(e.target.value)} className="input-field pr-10" />
         <button type="button" onClick={onToggle}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#475569] hover:text-[#94a3b8]">
+          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors">
           {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
         </button>
       </div>

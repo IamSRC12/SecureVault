@@ -1,28 +1,28 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { CheckCircle2, XCircle, Search, Trash2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { CheckCircle2, XCircle, Search, Trash2, ChevronLeft, ChevronRight, ClipboardList } from 'lucide-react'
 import type { AuditLog, AuditAction } from '../../types'
 
 const PAGE_SIZE = 50
 
 const ACTION_COLORS: Record<string, string> = {
-  LOGIN_SUCCESS:          'text-[#22c55e]',
-  LOGIN_FAILED:           'text-[#ef4444]',
-  ADD_PASSWORD:           'text-[#6366f1]',
-  EDIT_PASSWORD:          'text-[#8b5cf6]',
-  DELETE_PASSWORD:        'text-[#ef4444]',
-  ADD_API_KEY:            'text-[#6366f1]',
-  EDIT_API_KEY:           'text-[#8b5cf6]',
-  DELETE_API_KEY:         'text-[#ef4444]',
-  EXTENSION_SAVE:         'text-[#22c55e]',
-  EXTENSION_AUTOFILL:     'text-[#22c55e]',
-  LOCK:                   'text-[#f59e0b]',
-  UNLOCK:                 'text-[#22c55e]',
-  SETUP_COMPLETE:         'text-[#6366f1]',
-  CHANGE_MASTER_PASSWORD: 'text-[#f59e0b]',
-  EXPORT_VAULT:           'text-[#94a3b8]',
-  IMPORT_VAULT:           'text-[#94a3b8]',
-  CLEAR_DATA:             'text-[#ef4444]',
-  REGENERATE_TOKEN:       'text-[#f59e0b]',
+  LOGIN_SUCCESS:          'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+  LOGIN_FAILED:           'text-rose-400 bg-rose-500/10 border-rose-500/20',
+  ADD_PASSWORD:           'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+  EDIT_PASSWORD:          'text-purple-400 bg-purple-500/10 border-purple-500/20',
+  DELETE_PASSWORD:        'text-rose-400 bg-rose-500/10 border-rose-500/20',
+  ADD_API_KEY:            'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+  EDIT_API_KEY:           'text-purple-400 bg-purple-500/10 border-purple-500/20',
+  DELETE_API_KEY:         'text-rose-400 bg-rose-500/10 border-rose-500/20',
+  EXTENSION_SAVE:         'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+  EXTENSION_AUTOFILL:     'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+  LOCK:                   'text-amber-400 bg-amber-500/10 border-amber-500/20',
+  UNLOCK:                 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+  SETUP_COMPLETE:         'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+  CHANGE_MASTER_PASSWORD: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+  EXPORT_VAULT:           'text-slate-400 bg-slate-500/10 border-slate-500/20',
+  IMPORT_VAULT:           'text-slate-400 bg-slate-500/10 border-slate-500/20',
+  CLEAR_DATA:             'text-rose-400 bg-rose-500/10 border-rose-500/20',
+  REGENERATE_TOKEN:       'text-amber-400 bg-amber-500/10 border-amber-500/20',
 }
 
 export default function AuditLogView(): React.ReactElement {
@@ -35,7 +35,7 @@ export default function AuditLogView(): React.ReactElement {
 
   const load = useCallback(async () => {
     try {
-      const all = await window.electronAPI.db.getAuditLogs(10_000, 0)   // Load all for client-side filtering
+      const all = await window.electronAPI.db.getAuditLogs(10_000, 0)
 
       let filtered = all
       if (actionFilter !== 'all') filtered = filtered.filter(l => l.action === actionFilter)
@@ -64,99 +64,144 @@ export default function AuditLogView(): React.ReactElement {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-[#f1f5f9]">Audit Log</h1>
-        <button onClick={handleClear}
-          className={`btn-danger ${clearConfirm ? 'bg-[#ef4444]/20' : ''}`}>
+    <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-black text-white tracking-tight">Audit Log</h1>
+            <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold">
+              {total} Events
+            </span>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">Immutable security activity and extension log entries</p>
+        </div>
+
+        <button
+          onClick={handleClear}
+          className={`btn-danger flex-shrink-0 ${clearConfirm ? 'bg-rose-500/30 border-rose-500/50' : ''}`}
+        >
           <Trash2 className="w-4 h-4" />
-          {clearConfirm ? 'Confirm Clear' : 'Clear Log'}
+          <span>{clearConfirm ? 'Click to Confirm Clear' : 'Clear Audit Log'}</span>
         </button>
       </div>
 
-      {/* Filters */}
-      <div className="flex items-center gap-3 mb-5">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#475569]" />
-          <input type="text" value={search} onChange={e => { setSearch(e.target.value); setPage(0) }}
-            placeholder="Search logs..." className="input-field pl-10" />
+      {/* Search & Filter */}
+      <div className="bg-[#121420]/80 border border-white/10 rounded-2xl p-4 flex flex-wrap items-center gap-3 shadow-lg">
+        <div className="relative flex-1 min-w-[240px]">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400 pointer-events-none" />
+          <input
+            type="text"
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(0) }}
+            placeholder="Search audit details or actions..."
+            className="input-field pl-10"
+          />
         </div>
-        <select value={actionFilter} onChange={e => { setActionFilter(e.target.value as AuditAction | 'all'); setPage(0) }}
-          className="input-field w-auto text-sm">
-          <option value="all">All Actions</option>
-          <option value="LOGIN_SUCCESS">Login Success</option>
-          <option value="LOGIN_FAILED">Login Failed</option>
-          <option value="ADD_PASSWORD">Add Password</option>
-          <option value="DELETE_PASSWORD">Delete Password</option>
-          <option value="ADD_API_KEY">Add API Key</option>
-          <option value="EXTENSION_SAVE">Extension Save</option>
-          <option value="EXTENSION_AUTOFILL">Extension Autofill</option>
-          <option value="LOCK">Lock</option>
-          <option value="UNLOCK">Unlock</option>
-        </select>
+
+        <div className="relative">
+          <select
+            value={actionFilter}
+            onChange={e => { setActionFilter(e.target.value as AuditAction | 'all'); setPage(0) }}
+            className="input-field w-auto text-xs font-semibold py-2.5 cursor-pointer"
+          >
+            <option value="all" className="bg-[#141622]">All Action Types</option>
+            <option value="LOGIN_SUCCESS" className="bg-[#141622]">Login Success</option>
+            <option value="LOGIN_FAILED" className="bg-[#141622]">Login Failed</option>
+            <option value="ADD_PASSWORD" className="bg-[#141622]">Add Password</option>
+            <option value="DELETE_PASSWORD" className="bg-[#141622]">Delete Password</option>
+            <option value="ADD_API_KEY" className="bg-[#141622]">Add API Key</option>
+            <option value="EXTENSION_SAVE" className="bg-[#141622]">Extension Save</option>
+            <option value="EXTENSION_AUTOFILL" className="bg-[#141622]">Extension Autofill</option>
+            <option value="LOCK" className="bg-[#141622]">Vault Lock</option>
+            <option value="UNLOCK" className="bg-[#141622]">Vault Unlock</option>
+          </select>
+        </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-[#2a2a2a]">
-              <th className="text-left text-xs font-medium text-[#475569] px-4 py-3">Action</th>
-              <th className="text-left text-xs font-medium text-[#475569] px-4 py-3">Details</th>
-              <th className="text-left text-xs font-medium text-[#475569] px-4 py-3">Time</th>
-              <th className="text-center text-xs font-medium text-[#475569] px-4 py-3">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#2a2a2a]">
-            {logs.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="text-center text-[#475569] text-sm py-12">No audit logs found</td>
+      {/* Log Table */}
+      <div className="bg-[#121420]/80 border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-white/10 bg-white/[0.02] text-slate-400 text-[11px] font-bold uppercase tracking-wider">
+                <th className="px-5 py-3.5">Action Event</th>
+                <th className="px-5 py-3.5">Details</th>
+                <th className="px-5 py-3.5">Timestamp</th>
+                <th className="px-5 py-3.5 text-center">Result Status</th>
               </tr>
-            ) : (
-              logs.map(log => (
-                <tr key={log.id} className={`hover:bg-[#0f0f0f] transition-colors ${log.success ? '' : 'bg-[#ef4444]/3'}`}>
-                  <td className="px-4 py-3">
-                    <span className={`text-xs font-mono font-medium ${ACTION_COLORS[log.action] ?? 'text-[#94a3b8]'}`}>
-                      {log.action}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-[#94a3b8] max-w-xs truncate">{log.details || '—'}</td>
-                  <td className="px-4 py-3 text-xs text-[#475569] whitespace-nowrap">
-                    {new Date(log.timestamp).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    {log.success ? (
-                      <CheckCircle2 className="w-4 h-4 text-[#22c55e] inline" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-[#ef4444] inline" />
-                    )}
+            </thead>
+            <tbody className="divide-y divide-white/5 text-xs">
+              {logs.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="text-center text-slate-500 py-16">
+                    <ClipboardList className="w-8 h-8 mx-auto mb-2 text-slate-600" />
+                    No audit records match your query
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4">
-          <span className="text-xs text-[#475569]">
-            Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} of {total}
-          </span>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
-              className="p-1.5 rounded-lg text-[#475569] hover:text-[#f1f5f9] hover:bg-[#2a2a2a] disabled:opacity-50 disabled:cursor-not-allowed">
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <span className="text-xs text-[#94a3b8]">Page {page + 1} / {totalPages}</span>
-            <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
-              className="p-1.5 rounded-lg text-[#475569] hover:text-[#f1f5f9] hover:bg-[#2a2a2a] disabled:opacity-50 disabled:cursor-not-allowed">
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+              ) : (
+                logs.map(log => {
+                  const style = ACTION_COLORS[log.action] ?? 'text-slate-300 bg-slate-500/10 border-slate-500/20'
+                  return (
+                    <tr key={log.id} className={`hover:bg-white/[0.03] transition-colors ${!log.success ? 'bg-rose-500/[0.03]' : ''}`}>
+                      <td className="px-5 py-3.5">
+                        <span className={`inline-flex px-2.5 py-1 rounded-full font-mono text-[11px] font-bold border ${style}`}>
+                          {log.action}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5 font-medium text-slate-300 max-w-sm truncate">
+                        {log.details || '—'}
+                      </td>
+                      <td className="px-5 py-3.5 text-slate-400 font-mono text-[11px] whitespace-nowrap">
+                        {new Date(log.timestamp).toLocaleString()}
+                      </td>
+                      <td className="px-5 py-3.5 text-center">
+                        {log.success ? (
+                          <span className="inline-flex items-center gap-1 text-emerald-400 font-semibold">
+                            <CheckCircle2 className="w-4 h-4" /> Success
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-rose-400 font-semibold">
+                            <XCircle className="w-4 h-4" /> Failed
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
+
+        {/* Table Pagination Footer */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-5 py-3.5 border-t border-white/10 bg-[#0d0e16]">
+            <span className="text-xs text-slate-400 font-medium">
+              Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} of {total} events
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className="btn-secondary p-2 disabled:opacity-30"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="text-xs font-bold text-slate-300 font-mono px-2">
+                Page {page + 1} / {totalPages}
+              </span>
+              <button
+                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                disabled={page >= totalPages - 1}
+                className="btn-secondary p-2 disabled:opacity-30"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
