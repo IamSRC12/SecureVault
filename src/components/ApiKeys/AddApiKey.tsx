@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react'
-import { X, Eye, EyeOff, Copy, Check, Calendar } from 'lucide-react'
+import { X, Eye, EyeOff, Copy, Check, Calendar, Key, Tag, Link2, FileText, ShieldAlert } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
 import type { ApiKey, ApiKeyCategory, ApiKeyFormData } from '../../types'
 
@@ -33,13 +33,14 @@ export default function AddApiKey({ apiKey, onClose, onSaved }: AddApiKeyProps):
   const [copiedKey,  setCopiedKey]  = useState(false)
 
   const update = (k: keyof ApiKeyFormData) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
       setForm(f => ({ ...f, [k]: e.target.value }))
 
   const handleCopyKey = async () => {
+    if (!form.api_key) return
     await navigator.clipboard.writeText(form.api_key)
     setCopiedKey(true)
-    setTimeout(() => { navigator.clipboard.writeText(''); setCopiedKey(false) }, 30_000)
+    setTimeout(() => setCopiedKey(false), 2000)
   }
 
   const validate = (): boolean => {
@@ -92,102 +93,192 @@ export default function AddApiKey({ apiKey, onClose, onSaved }: AddApiKeyProps):
 
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal-content max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-[#2a2a2a]">
-          <h2 className="text-lg font-semibold text-[#f1f5f9]">{isEdit ? 'Edit API Key' : 'Add API Key'}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-[#475569] hover:text-[#f1f5f9] hover:bg-[#2a2a2a]">
+      <div className="modal-content">
+        {/* Fixed Header */}
+        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-white/10 bg-[#12131f] flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
+              <Key className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-white tracking-wide">
+                {isEdit ? 'Edit API Key' : 'Add API Key'}
+              </h2>
+              <p className="text-xs text-slate-400">Store API keys and secrets securely</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-5 space-y-4">
+        {/* Scrollable Form Body */}
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 custom-scrollbar bg-[#141622]">
           {/* Service Name */}
-          <div>
-            <label className="block text-sm font-medium text-[#94a3b8] mb-1.5">
-              Service Name <span className="text-[#ef4444]">*</span>
-            </label>
-            <input id="apikey-service" type="text" value={form.service_name} onChange={update('service_name')}
-              placeholder="e.g. OpenAI, AWS, Stripe" className="input-field" />
-            {errors.service_name && <p className="text-[#ef4444] text-xs mt-1">{errors.service_name}</p>}
-          </div>
+          <Field label="Service Name" required error={errors.service_name}>
+            <input
+              id="apikey-service"
+              type="text"
+              value={form.service_name}
+              onChange={update('service_name')}
+              placeholder="e.g. OpenAI, AWS, Stripe, Anthropic"
+              className="input-field"
+            />
+          </Field>
 
           {/* API Key */}
-          <div>
-            <label className="block text-sm font-medium text-[#94a3b8] mb-1.5">
-              API Key <span className="text-[#ef4444]">*</span>
-            </label>
+          <Field label="API Key Value" required error={errors.api_key}>
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <input id="apikey-key" type={showKey ? 'text' : 'password'} value={form.api_key} onChange={update('api_key')}
-                  placeholder="sk-..." className="input-field pr-10 font-mono text-xs" />
-                <button type="button" onClick={() => setShowKey(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#475569] hover:text-[#94a3b8]">
+                <input
+                  id="apikey-key"
+                  type={showKey ? 'text' : 'password'}
+                  value={form.api_key}
+                  onChange={update('api_key')}
+                  placeholder="sk-..."
+                  className="input-field pr-11 font-mono text-xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowKey(v => !v)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                >
                   {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              <button onClick={handleCopyKey}
-                className={`btn-secondary px-3 flex-shrink-0 ${copiedKey ? 'border-[#22c55e]/30 text-[#22c55e]' : ''}`}>
-                {copiedKey ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              <button
+                type="button"
+                onClick={handleCopyKey}
+                className={`btn-secondary px-3.5 flex-shrink-0 transition-all ${
+                  copiedKey ? 'border-emerald-500/50 text-emerald-400 bg-emerald-500/10' : ''
+                }`}
+              >
+                {copiedKey ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
               </button>
             </div>
-            {errors.api_key && <p className="text-[#ef4444] text-xs mt-1">{errors.api_key}</p>}
-          </div>
+          </Field>
 
           {/* Secret Key */}
-          <div>
-            <label className="block text-sm font-medium text-[#94a3b8] mb-1.5">Secret Key (optional)</label>
+          <Field label="Secret Key (Optional)">
             <div className="relative">
-              <input id="apikey-secret" type={showSecret ? 'text' : 'password'} value={form.secret_key} onChange={update('secret_key')}
-                placeholder="Secret access key" className="input-field pr-10 font-mono text-xs" />
-              <button type="button" onClick={() => setShowSecret(v => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#475569] hover:text-[#94a3b8]">
+              <input
+                id="apikey-secret"
+                type={showSecret ? 'text' : 'password'}
+                value={form.secret_key}
+                onChange={update('secret_key')}
+                placeholder="Secret access key (if applicable)"
+                className="input-field pr-11 font-mono text-xs"
+              />
+              <button
+                type="button"
+                onClick={() => setShowSecret(v => !v)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+              >
                 {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-          </div>
+          </Field>
 
           {/* Endpoint URL + Category */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-[#94a3b8] mb-1.5">Endpoint URL</label>
-              <input id="apikey-endpoint" type="url" value={form.endpoint_url} onChange={update('endpoint_url')}
-                placeholder="https://api.example.com" className="input-field" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#94a3b8] mb-1.5">Category</label>
-              <select id="apikey-category" value={form.category} onChange={update('category')} className="input-field capitalize">
-                {CATEGORIES.map(c => (
-                  <option key={c} value={c} className="capitalize">{c}</option>
-                ))}
-              </select>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Field label="Endpoint URL">
+              <div className="relative">
+                <Link2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                <input
+                  id="apikey-endpoint"
+                  type="url"
+                  value={form.endpoint_url}
+                  onChange={update('endpoint_url')}
+                  placeholder="https://api.openai.com/v1"
+                  className="input-field pl-10"
+                />
+              </div>
+            </Field>
+
+            <Field label="Category">
+              <div className="relative">
+                <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                <select
+                  id="apikey-category"
+                  value={form.category}
+                  onChange={update('category')}
+                  className="input-field pl-10 capitalize cursor-pointer"
+                >
+                  {CATEGORIES.map(c => (
+                    <option key={c} value={c} className="bg-[#141622] capitalize">{c}</option>
+                  ))}
+                </select>
+              </div>
+            </Field>
           </div>
 
           {/* Description + Expiry */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-[#94a3b8] mb-1.5">Description</label>
-              <input id="apikey-desc" type="text" value={form.description} onChange={update('description')}
-                placeholder="What is this key for?" className="input-field" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#94a3b8] mb-1.5">
-                <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />Expiry Date</span>
-              </label>
-              <input id="apikey-expiry" type="date" value={form.expiry_date} onChange={update('expiry_date')} className="input-field" />
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Field label="Description">
+              <input
+                id="apikey-desc"
+                type="text"
+                value={form.description}
+                onChange={update('description')}
+                placeholder="What is this key used for?"
+                className="input-field"
+              />
+            </Field>
+
+            <Field label="Expiration Date">
+              <div className="relative">
+                <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                <input
+                  id="apikey-expiry"
+                  type="date"
+                  value={form.expiry_date}
+                  onChange={update('expiry_date')}
+                  className="input-field pl-10 cursor-pointer"
+                />
+              </div>
+            </Field>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-5 border-t border-[#2a2a2a]">
-          <button onClick={onClose} className="btn-secondary">Cancel</button>
-          <button id="save-apikey-btn" onClick={handleSave} disabled={isSaving} className="btn-primary">
+        {/* Fixed Footer */}
+        <div className="flex items-center justify-end gap-3 p-4 sm:p-5 border-t border-white/10 bg-[#12131f] flex-shrink-0">
+          <button type="button" onClick={onClose} className="btn-secondary">
+            Cancel
+          </button>
+          <button
+            id="save-apikey-btn"
+            type="button"
+            onClick={handleSave}
+            disabled={isSaving}
+            className="btn-primary"
+          >
             {isSaving ? 'Saving...' : isEdit ? 'Save Changes' : 'Add API Key'}
           </button>
         </div>
       </div>
+    </div>
+  )
+}
+
+function Field({
+  label, required, error, children,
+}: {
+  label: string
+  required?: boolean
+  error?: string
+  children: React.ReactNode
+}): React.ReactElement {
+  return (
+    <div>
+      <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+        {label} {required && <span className="text-rose-500">*</span>}
+      </label>
+      {children}
+      {error && (
+        <p className="text-rose-400 text-xs mt-1.5 flex items-center gap-1">
+          <ShieldAlert className="w-3.5 h-3.5 flex-shrink-0" /> {error}
+        </p>
+      )}
     </div>
   )
 }

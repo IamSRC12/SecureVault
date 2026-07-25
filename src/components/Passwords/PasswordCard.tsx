@@ -1,24 +1,21 @@
 import React, { useState, useCallback } from 'react'
 import {
-  Star, Copy, Edit2, Trash2, Globe, Check, Eye, EyeOff,
+  Star, Copy, Edit2, Trash2, Globe, Check, Eye, EyeOff, ShieldCheck, ShieldAlert
 } from 'lucide-react'
 import { evaluatePasswordStrength } from '../../services/passwordUtils'
-import { useAppStore } from '../../store/appStore'
 import type { Credential } from '../../types'
 
-// ─── Category badge colors ────────────────────────────────────────────────
-const CATEGORY_COLORS: Record<string, string> = {
-  social:   'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  banking:  'bg-green-500/10 text-green-400 border-green-500/20',
-  work:     'bg-purple-500/10 text-purple-400 border-purple-500/20',
-  shopping: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-  email:    'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-  other:    'bg-gray-500/10 text-gray-400 border-gray-500/20',
+// ─── Category badge styles ────────────────────────────────────────────────
+const CATEGORY_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+  social:   { bg: 'bg-blue-500/10',   text: 'text-blue-400',   border: 'border-blue-500/25' },
+  banking:  { bg: 'bg-emerald-500/10',text: 'text-emerald-400',border: 'border-emerald-500/25' },
+  work:     { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/25' },
+  shopping: { bg: 'bg-amber-500/10',  text: 'text-amber-400',  border: 'border-amber-500/25' },
+  email:    { bg: 'bg-sky-500/10',    text: 'text-sky-400',    border: 'border-sky-500/25' },
+  other:    { bg: 'bg-slate-500/10',  text: 'text-slate-400',  border: 'border-slate-500/25' },
 }
 
 const CLIPBOARD_TIMEOUT = 30_000 // 30 seconds
-
-// ─── Password Card ────────────────────────────────────────────────────────
 
 interface PasswordCardProps {
   credential: Credential
@@ -31,12 +28,12 @@ export default function PasswordCard({
   onEdit,
   onRefresh,
 }: PasswordCardProps): React.ReactElement {
-  const [copied, setCopied]       = useState(false)
-  const [showPass, setShowPass]   = useState(false)
+  const [copied, setCopied]         = useState(false)
+  const [showPass, setShowPass]     = useState(false)
   const [delConfirm, setDelConfirm] = useState(false)
+  const [imgError, setImgError]     = useState(false)
 
   const copyTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
-
   const strength = evaluatePasswordStrength(credential.password)
 
   const handleCopy = useCallback(async () => {
@@ -50,7 +47,7 @@ export default function PasswordCard({
         setCopied(false)
       }, CLIPBOARD_TIMEOUT)
     } catch {
-      // Clipboard API may not be available
+      // Clipboard fallback
     }
   }, [credential.password])
 
@@ -70,122 +67,122 @@ export default function PasswordCard({
   }, [delConfirm, credential.id, onRefresh])
 
   const faviconUrl = credential.favicon_url ||
-    `https://www.google.com/s2/favicons?domain=${credential.domain}&sz=32`
+    `https://www.google.com/s2/favicons?domain=${credential.domain}&sz=64`
 
-  const catClass = CATEGORY_COLORS[credential.category] ?? CATEGORY_COLORS.other
-
-  const strengthBadge =
-    strength.strength === 'strong' ? 'strength-strong' :
-    strength.strength === 'medium' ? 'strength-medium' : 'strength-weak'
+  const catStyle = CATEGORY_STYLES[credential.category] ?? CATEGORY_STYLES.other
+  const initial = (credential.website_name[0] || 'W').toUpperCase()
 
   return (
-    <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4 card-hover group">
-      {/* Header row */}
-      <div className="flex items-start gap-3 mb-3">
-        {/* Favicon */}
-        <div className="w-10 h-10 rounded-lg bg-[#0f0f0f] border border-[#2a2a2a] flex items-center justify-center flex-shrink-0 overflow-hidden">
-          <img
-            src={faviconUrl}
-            alt=""
-            className="w-5 h-5"
-            onError={(e) => {
-              const el = e.currentTarget as HTMLImageElement
-              el.style.display = 'none'
-              const parent = el.parentElement
-              if (parent) {
-                parent.innerHTML = `<span class="text-sm font-bold text-[#6366f1]">${credential.website_name[0]?.toUpperCase()}</span>`
-              }
-            }}
-          />
-        </div>
+    <div className="bg-[#141622]/80 backdrop-blur-xl border border-white/10 hover:border-indigo-500/40 rounded-2xl p-5 card-hover flex flex-col justify-between relative group shadow-xl shadow-black/40 overflow-hidden">
+      {/* Glow highlight on hover */}
+      <div className="absolute -right-12 -top-12 w-28 h-28 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all pointer-events-none" />
 
-        {/* Title + domain */}
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-[#f1f5f9] text-sm truncate">{credential.website_name}</p>
-          <div className="flex items-center gap-1 mt-0.5">
-            <Globe className="w-3 h-3 text-[#475569] flex-shrink-0" />
-            <p className="text-xs text-[#475569] truncate">{credential.domain}</p>
+      <div>
+        {/* Header row: Favicon, Title, Favorite Button */}
+        <div className="flex items-start gap-3.5 mb-4">
+          <div className="w-11 h-11 rounded-xl bg-[#0e1017] border border-white/10 flex items-center justify-center flex-shrink-0 shadow-inner overflow-hidden relative">
+            {!imgError ? (
+              <img
+                src={faviconUrl}
+                alt=""
+                className="w-6 h-6 object-contain"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <span className="text-base font-extrabold text-gradient">
+                {initial}
+              </span>
+            )}
           </div>
+
+          <div className="flex-1 min-w-0 pr-2">
+            <h3 className="font-bold text-white text-base truncate tracking-tight group-hover:text-indigo-300 transition-colors">
+              {credential.website_name}
+            </h3>
+            <div className="flex items-center gap-1.5 mt-0.5 text-xs text-slate-400">
+              <Globe className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+              <span className="truncate">{credential.domain}</span>
+            </div>
+          </div>
+
+          <button
+            onClick={handleFavorite}
+            className="flex-shrink-0 p-2 rounded-xl hover:bg-white/10 transition-colors text-slate-400 hover:text-amber-400"
+            title={credential.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Star
+              className={`w-4 h-4 transition-all ${
+                credential.is_favorite ? 'fill-amber-400 text-amber-400 scale-110 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]' : ''
+              }`}
+            />
+          </button>
         </div>
 
-        {/* Favorite */}
-        <button
-          onClick={handleFavorite}
-          className="flex-shrink-0 p-1 rounded hover:bg-[#2a2a2a] transition-colors"
-          title={credential.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
-        >
-          <Star
-            className={`w-4 h-4 ${credential.is_favorite ? 'fill-[#f59e0b] text-[#f59e0b]' : 'text-[#475569]'}`}
-          />
-        </button>
+        {/* Username / Email Row */}
+        <div className="mb-4 bg-white/[0.03] border border-white/5 rounded-xl px-3.5 py-2.5">
+          <span className="text-xs text-slate-400 block font-mono truncate">
+            {credential.email || credential.username || 'No username specified'}
+          </span>
+        </div>
+
+        {/* Category & Strength Badges */}
+        <div className="flex items-center gap-2 mb-4 flex-wrap">
+          <span className={`badge ${catStyle.bg} ${catStyle.text} ${catStyle.border}`}>
+            {credential.category}
+          </span>
+          <span className={`badge ${
+            strength.strength === 'strong' ? 'strength-strong' :
+            strength.strength === 'medium' ? 'strength-medium' : 'strength-weak'
+          }`}>
+            {strength.strength}
+          </span>
+        </div>
+
+        {/* Password Preview Bar */}
+        <div className="flex items-center gap-2 bg-[#0d0e16] border border-white/10 rounded-xl px-3.5 py-2.5 mb-4 group/pass">
+          <span className="flex-1 text-xs font-mono text-slate-300 truncate tracking-wider">
+            {showPass ? credential.password : '••••••••••••••••'}
+          </span>
+          <button
+            onClick={() => setShowPass(v => !v)}
+            className="text-slate-400 hover:text-indigo-400 transition-colors p-1 flex-shrink-0"
+            title={showPass ? 'Hide password' : 'Show password'}
+          >
+            {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
       </div>
 
-      {/* Username / email */}
-      <div className="mb-3">
-        <p className="text-xs text-[#475569] truncate">
-          {credential.email || credential.username || 'No username'}
-        </p>
-      </div>
-
-      {/* Badges */}
-      <div className="flex items-center gap-2 mb-3 flex-wrap">
-        <span className={`badge border ${catClass}`}>
-          {credential.category}
-        </span>
-        <span className={`badge ${strengthBadge}`}>
-          {strength.strength}
-        </span>
-      </div>
-
-      {/* Password preview */}
-      <div className="flex items-center gap-2 bg-[#0f0f0f] rounded-lg px-3 py-2 mb-3">
-        <span className="flex-1 text-xs font-mono text-[#94a3b8] truncate">
-          {showPass ? credential.password : '••••••••••••'}
-        </span>
-        <button
-          onClick={() => setShowPass(v => !v)}
-          className="text-[#475569] hover:text-[#94a3b8] transition-colors flex-shrink-0"
-        >
-          {showPass ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-        </button>
-      </div>
-
-      {/* Action buttons */}
-      <div className="flex items-center gap-2">
-        {/* Copy */}
+      {/* Action Footer Buttons */}
+      <div className="flex items-center gap-2 pt-3 border-t border-white/5">
         <button
           onClick={handleCopy}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
+          className={`flex-1 flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
             copied
-              ? 'bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20'
-              : 'bg-[#2a2a2a] text-[#94a3b8] hover:text-[#f1f5f9] border border-transparent'
+              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-lg shadow-emerald-500/10'
+              : 'bg-white/5 hover:bg-indigo-600/20 text-slate-300 hover:text-white border border-white/10 hover:border-indigo-500/30'
           }`}
-          title={copied ? 'Copied! Clears in 30s' : 'Copy password'}
         >
-          {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-          {copied ? 'Copied!' : 'Copy'}
+          {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+          <span>{copied ? 'Copied (30s)' : 'Copy Password'}</span>
         </button>
 
-        <div className="flex-1" />
-
-        {/* Edit */}
         <button
           onClick={() => onEdit(credential)}
-          className="p-1.5 rounded-lg text-[#475569] hover:text-[#6366f1] hover:bg-[#6366f1]/10 transition-all"
-          title="Edit"
+          className="p-2 rounded-xl text-slate-400 hover:text-indigo-300 hover:bg-indigo-500/10 border border-transparent hover:border-indigo-500/20 transition-all"
+          title="Edit Credential"
         >
           <Edit2 className="w-4 h-4" />
         </button>
 
-        {/* Delete */}
         <button
           onClick={handleDelete}
-          className={`p-1.5 rounded-lg transition-all ${
+          className={`p-2 rounded-xl transition-all border ${
             delConfirm
-              ? 'text-[#ef4444] bg-[#ef4444]/10'
-              : 'text-[#475569] hover:text-[#ef4444] hover:bg-[#ef4444]/10'
+              ? 'text-rose-400 bg-rose-500/20 border-rose-500/40'
+              : 'text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border-transparent hover:border-rose-500/20'
           }`}
-          title={delConfirm ? 'Click again to confirm delete' : 'Delete'}
+          title={delConfirm ? 'Click again to confirm delete' : 'Delete Credential'}
         >
           <Trash2 className="w-4 h-4" />
         </button>
