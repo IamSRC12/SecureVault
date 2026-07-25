@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import { create } from 'zustand'
 import type { AppScreen, MainRoute } from '../types'
 

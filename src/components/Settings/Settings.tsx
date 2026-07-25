@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import React, { useState, useCallback, useEffect } from 'react'
 import {
   Shield, Key, Eye, EyeOff, Copy, Check, RefreshCw, AlertTriangle,

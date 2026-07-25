@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { Shield, Eye, EyeOff, AlertTriangle, Clock } from 'lucide-react'
 import { useAppStore } from '../../store/appStore'
