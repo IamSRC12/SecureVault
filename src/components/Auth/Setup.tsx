@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import React, { useState, useCallback, useEffect } from 'react'
 import { Shield, Eye, EyeOff, Check, X, AlertTriangle } from 'lucide-react'
 import { evaluatePasswordStrength } from '../../services/passwordUtils'
@@ -46,8 +47,9 @@ export default function Setup(): React.ReactElement {
 
       setSetupComplete(true)
       unlock(encKey)
-    } catch (err) {
-      setError('Setup failed. Please try again.')
+    } catch (err: any) {
+      console.error('Setup error:', err)
+      setError(`Setup failed: ${err?.message || err || 'Please try again.'}`)
       setIsLoading(false)
     }
   }, [canCreate, password, unlock, setSetupComplete])
