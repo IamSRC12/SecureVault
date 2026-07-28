@@ -1,0 +1,3507 @@
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: .gitignore
+ACTION: Created
+================================================================================
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs & executables
+dist/
+out/
+build/
+*.exe
+*.blockmap
+*.nsis.7z
+
+# Local log files & sensitive outputs
+app_output.txt
+*.log
+*.sqlite
+*.db
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS Metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE & Editor files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: package.json
+ACTION: Created
+================================================================================
+{
+  "name": "securevault",
+  "private": true,
+  "version": "1.0.0",
+  "description": "SecureVault - Your passwords, protected forever",
+  "main": "out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "rebuild": "electron-rebuild -f -w argon2,better-sqlite3",
+    "postinstall": "echo Install complete - run npm run rebuild separately if needed",
+    "dist": "npm run build && electron-builder"
+  },
+  "dependencies": {
+    "argon2": "^0.31.2",
+    "better-sqlite3": "^9.4.3",
+    "buffer": "^6.0.3",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.383.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.23.1",
+    "uuid": "^9.0.1",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^3.6.0",
+    "@types/better-sqlite3": "^7.6.10",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.14.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/uuid": "^9.0.8",
+    "@vitejs/plugin-react": "^4.3.0",
+    "autoprefixer": "^10.4.19",
+    "electron": "^30.1.2",
+    "electron-builder": "^26.15.3",
+    "electron-vite": "^2.3.0",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.4.5",
+    "vite": "^5.3.1"
+  }
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: tsconfig.json
+ACTION: Created
+================================================================================
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src", "electron"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: tsconfig.node.json
+ACTION: Created
+================================================================================
+{
+  "compilerOptions": {
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "esModuleInterop": true
+  },
+  "include": ["electron.vite.config.ts", "electron/**/*"]
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: tailwind.config.js
+ACTION: Created
+================================================================================
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./src/**/*.{html,js,ts,jsx,tsx}', './index.html'],
+  theme: {
+    extend: {
+      colors: {
+        'bg-page': '#0f0f0f',
+        'bg-card': '#1a1a1a',
+        'bg-border': '#2a2a2a',
+        primary: {
+          DEFAULT: '#6366f1',
+          hover: '#4f46e5',
+        },
+        success: {
+          DEFAULT: '#22c55e',
+        },
+        warning: {
+          DEFAULT: '#f59e0b',
+        },
+        danger: {
+          DEFAULT: '#ef4444',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
+      },
+      animation: {
+        'shake': 'shake 0.5s ease-in-out',
+        'slide-down': 'slideDown 0.3s ease-out',
+        'slide-up': 'slideUp 0.3s ease-in',
+        'fade-in': 'fadeIn 0.2s ease-out',
+        'pulse-slow': 'pulse 3s ease-in-out infinite',
+      },
+      keyframes: {
+        shake: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-8px)' },
+          '20%, 40%, 60%, 80%': { transform: 'translateX(8px)' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-100%)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(0)', opacity: '1' },
+          '100%': { transform: 'translateY(-100%)', opacity: '0' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(4px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+    },
+  },
+  plugins: [],
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: postcss.config.js
+ACTION: Created
+================================================================================
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: index.html
+ACTION: Created
+================================================================================
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:45678 https://fonts.googleapis.com https://fonts.gstatic.com"
+    />
+    <title>SecureVault</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: electron.vite.config.ts
+ACTION: Created
+================================================================================
+import { resolve } from 'path'
+import { defineConfig, externalizeDepsPlugin } from 'electron-vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  main: {
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      rollupOptions: {
+        input: {
+          index: resolve(__dirname, 'electron/main.ts')
+        }
+      }
+    }
+  },
+  preload: {
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      rollupOptions: {
+        input: {
+          index: resolve(__dirname, 'electron/preload.ts')
+        }
+      }
+    }
+  },
+  renderer: {
+    root: resolve(__dirname, 'src'),
+    build: {
+      rollupOptions: {
+        input: {
+          index: resolve(__dirname, 'src/index.html')
+        }
+      }
+    },
+    resolve: {
+      alias: {
+        '@': resolve('src')
+      }
+    },
+    plugins: [react()]
+  }
+})
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: electron-builder.json
+ACTION: Created
+================================================================================
+{
+  "appId": "com.securevault.app",
+  "productName": "SecureVault",
+  "directories": {
+    "output": "dist"
+  },
+  "files": [
+    "out/**/*",
+    "package.json"
+  ],
+  "win": {
+    "icon": "build/icon.png",
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      },
+      {
+        "target": "portable",
+        "arch": [
+          "x64"
+        ]
+      }
+    ]
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "SecureVault"
+  },
+  "asar": true,
+  "publish": null
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: README.md
+ACTION: Created
+================================================================================
+# SecureVault (KeyVault)
+
+A high-security password and API key manager desktop application built with Electron, React, TypeScript, Tailwind CSS, and SQLite.
+
+## Features
+- **Master Password Encryption**: PBKDF2/Argon2 password hashing and AES-256-GCM vault encryption.
+- **Credential Storage**: Passwords, usernames, domains, notes, and strength evaluation.
+- **API Key Storage**: Secret key encryption, service endpoint management, and tracking.
+- **Chrome Extension Support**: Auto-fill and auto-save credentials directly from Chrome.
+- **Audit Logging**: Local activity auditing and automatic security lock timers.
+- **Executables**: Available as both installer setup and standalone portable `.exe` binaries.
+- **Real-Time Auto-Sync**: Automatically synchronized with GitHub on file changes.
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/index.html
+ACTION: Created
+================================================================================
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.google.com https://*.gstatic.com; connect-src 'self' http://127.0.0.1:45678">
+    <title>SecureVault</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/index.css
+ACTION: Created
+================================================================================
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base Reset ─────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #0b0c10;
+  color: #f1f5f9;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* ─── Custom Scrollbars ──────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 17, 26, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6366f1;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #6366f1;
+}
+
+/* ─── Focus Styles ───────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* ─── Selection ──────────────────────────────────────────────────────────── */
+::selection {
+  background: rgba(99, 102, 241, 0.35);
+  color: #ffffff;
+}
+
+/* ─── Utility Classes ────────────────────────────────────────────────────── */
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #e879f9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-glass {
+    background: rgba(18, 20, 29, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .bg-glass-card {
+    background: linear-gradient(145deg, rgba(26, 29, 45, 0.6) 0%, rgba(18, 20, 31, 0.8) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .border-subtle {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .card-hover {
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card-hover:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.25);
+  }
+
+  .input-field {
+    @apply w-full bg-[#12141d] border border-white/10 rounded-xl px-4 py-2.5 text-[#f8fafc] placeholder-[#64748b] text-sm transition-all duration-200 shadow-inner;
+  }
+
+  .input-field:focus {
+    @apply outline-none border-[#6366f1] ring-2 ring-[#6366f1]/25 bg-[#161824];
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-[#6366f1] to-[#4f46e5] hover:from-[#4f46e5] hover:to-[#4338ca] text-white font-medium px-4 py-2.5 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+  }
+
+  .btn-secondary {
+    @apply bg-[#1a1d2e]/80 hover:bg-[#252940] text-[#f1f5f9] border border-white/10 font-medium px-4 py-2.5 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98];
+  }
+
+  .btn-danger {
+    @apply bg-[#ef4444]/10 hover:bg-[#ef4444]/20 text-[#f87171] border border-[#ef4444]/30 font-medium px-4 py-2.5 rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98];
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide border;
+  }
+
+  .strength-weak {
+    @apply text-[#f87171] bg-[#ef4444]/15 border-[#ef4444]/30;
+  }
+
+  .strength-medium {
+    @apply text-[#fbbf24] bg-[#f59e0b]/15 border-[#f59e0b]/30;
+  }
+
+  .strength-strong {
+    @apply text-[#4ade80] bg-[#22c55e]/15 border-[#22c55e]/30;
+  }
+}
+
+/* ─── Animations & Modal Fix ─────────────────────────────────────────────── */
+@layer components {
+  .animate-in {
+    animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden;
+    animation: fadeIn 0.15s ease-out;
+  }
+
+  .modal-content {
+    @apply bg-[#141622] border border-white/15 rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-[85vh] sm:max-h-[90vh] overflow-hidden;
+    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+}
+
+/* ─── Tooltip & Selection Helpers ───────────────────────────────────────── */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/main.tsx
+ACTION: Created
+================================================================================
+import { Buffer } from 'buffer'
+if (typeof window !== 'undefined') {
+  ;(window as any).Buffer = Buffer
+  ;(globalThis as any).Buffer = Buffer
+}
+
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+import './index.css'
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+)
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/App.tsx
+ACTION: Created
+================================================================================
+import React, { useEffect, useRef } from 'react'
+import Setup from './components/Auth/Setup'
+import Login from './components/Auth/Login'
+import MainLayout from './components/Layout/MainLayout'
+import { useAppStore } from './store/appStore'
+
+// ─── Auto-lock timer interval ─────────────────────────────────────────────
+const LOCK_CHECK_INTERVAL = 30_000 // 30 seconds
+
+// ─── Root App ─────────────────────────────────────────────────────────────
+
+export default function App(): React.ReactElement {
+  const {
+    screen,
+    isLocked,
+    lock,
+    setAppPath,
+    setAppVersion,
+    setSetupComplete,
+    setAutoLockTimeout,
+    setExtensionToken,
+    encryptionKey,
+    lastActivity,
+    autoLockTimeout,
+    updateActivity,
+  } = useAppStore()
+
+  const lockTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // ─── Initialize app on mount ─────────────────────────────────────────────
+  useEffect(() => {
+    async function init() {
+      try {
+        // Get app data path from Electron
+        const appPath = await window.electronAPI.getAppPath()
+        const version = await window.electronAPI.getAppVersion()
+
+        setAppPath(appPath)
+        setAppVersion(version)
+
+        // Check if setup is complete
+        const isSetupSetting = await window.electronAPI.db.getSetting('is_setup_complete')
+        const isSetup = isSetupSetting === 'true'
+        setSetupComplete(isSetup)
+
+        if (!isSetup) {
+          useAppStore.getState().setScreen('setup')
+        } else {
+          useAppStore.getState().setScreen('login')
+        }
+
+        // Load settings
+        const timeoutSetting = await window.electronAPI.db.getSetting('auto_lock_timeout')
+        const timeout = parseInt(timeoutSetting ?? '5', 10)
+        setAutoLockTimeout(isNaN(timeout) ? 5 : timeout)
+      } catch (err) {
+        console.error('App initialization failed:', err)
+      }
+    }
+
+    init()
+  }, [setAppPath, setAppVersion, setSetupComplete, setAutoLockTimeout])
+
+  // ─── Sync lock state with API server ──────────────────────────────────────
+  useEffect(() => {
+    if (!isLocked && screen === 'main' && encryptionKey) {
+      window.electronAPI.setUnlocked(encryptionKey.toString('hex')).catch(() => {})
+    } else if (isLocked) {
+      window.electronAPI.setLocked().catch(() => {})
+    }
+  }, [isLocked, screen, encryptionKey])
+
+  // ─── Extension token generation on unlock ────────────────────────────────
+  useEffect(() => {
+    async function generateToken() {
+      if (!isLocked && screen === 'main') {
+        try {
+          const secret = await window.electronAPI.db.getSetting('master_password_salt') ?? 'securevault-secret'
+          const token = await window.electronAPI.auth.signJwt(
+            { app: 'securevault', ts: Date.now() },
+            secret,
+            { expiresIn: '24h' }
+          )
+          await window.electronAPI.db.setSetting('extension_token', token)
+          setExtensionToken(token)
+        } catch (err) {
+          console.error('Failed to generate extension token:', err)
+        }
+      } else if (isLocked) {
+        // Clear token on lock
+        try {
+          await window.electronAPI.db.setSetting('extension_token', '')
+          setExtensionToken(null)
+        } catch {
+          // ignore
+        }
+      }
+    }
+    generateToken()
+  }, [isLocked, screen, setExtensionToken])
+
+  // ─── Auto-lock timer ─────────────────────────────────────────────────────
+  useEffect(() => {
+    if (isLocked || screen !== 'main') {
+      if (lockTimerRef.current) clearInterval(lockTimerRef.current)
+      return
+    }
+
+    lockTimerRef.current = setInterval(() => {
+      if (autoLockTimeout === 0) return // Never lock
+
+      const inactiveMs    = Date.now() - lastActivity
+      const timeoutMs     = autoLockTimeout * 60 * 1000
+
+      if (inactiveMs >= timeoutMs) {
+        window.electronAPI.db.addAuditLog('LOCK', 'Auto-locked due to inactivity', true).catch(() => {})
+        lock()
+      }
+    }, LOCK_CHECK_INTERVAL)
+
+    return () => {
+      if (lockTimerRef.current) clearInterval(lockTimerRef.current)
+    }
+  }, [isLocked, screen, lock, lastActivity, autoLockTimeout])
+
+  // ─── Force lock from Electron main process ────────────────────────────────
+  useEffect(() => {
+    window.electronAPI.onForceLock(() => {
+      window.electronAPI.db.addAuditLog('LOCK', 'Locked by user', true).catch(() => {})
+      lock()
+    })
+
+    return () => {
+      window.electronAPI.removeForceLockListener()
+    }
+  }, [lock])
+
+  // ─── Global activity tracking ─────────────────────────────────────────────
+  useEffect(() => {
+    const handler = () => updateActivity()
+    const events  = ['mousedown', 'keydown', 'scroll', 'touchstart']
+    events.forEach(e => window.addEventListener(e, handler, { passive: true }))
+    return () => events.forEach(e => window.removeEventListener(e, handler))
+  }, [updateActivity])
+
+  // ─── Keyboard shortcuts ────────────────────────────────────────────────────
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      // Ctrl+L = Lock
+      if ((e.ctrlKey || e.metaKey) && e.key === 'l' && screen === 'main') {
+        e.preventDefault()
+        window.electronAPI.db.addAuditLog('LOCK', 'Locked via keyboard shortcut', true).catch(() => {})
+        lock()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [screen, lock])
+
+  // ─── Render ───────────────────────────────────────────────────────────────
+
+  if (screen === 'setup') return <Setup />
+  if (screen === 'login') return <Login />
+  if (screen === 'main')  return <MainLayout />
+
+  // Fallback loading state
+  return (
+    <div className="flex items-center justify-center h-screen bg-[#0f0f0f]">
+      <div className="flex items-center gap-3 text-[#94a3b8]">
+        <svg className="animate-spin h-5 w-5 text-[#6366f1]" viewBox="0 0 24 24" fill="none">
+          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
+        Initializing SecureVault...
+      </div>
+    </div>
+  )
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/types/index.ts
+ACTION: Created
+================================================================================
+// ─── Database Entities ────────────────────────────────────────────────────
+
+export interface Credential {
+  id: string
+  domain: string
+  website_name: string
+  username: string | null
+  email: string | null
+  password: string          // Stored encrypted, decrypted when needed
+  notes: string | null      // Stored encrypted
+  category: CredentialCategory
+  favicon_url: string | null
+  is_favorite: number       // 0 or 1
+  password_strength: PasswordStrength | null
+  date_created: string      // ISO timestamp
+  date_modified: string     // ISO timestamp
+  last_used: string | null  // ISO timestamp
+}
+
+export interface ApiKey {
+  id: string
+  service_name: string
+  api_key: string           // Stored encrypted
+  secret_key: string | null // Stored encrypted
+  endpoint_url: string | null
+  description: string | null
+  category: ApiKeyCategory
+  expiry_date: string | null
+  is_favorite: number       // 0 or 1
+  date_created: string
+  date_modified: string
+}
+
+export interface AppSetting {
+  key: string
+  value: string
+}
+
+export interface AuditLog {
+  id: string
+  action: AuditAction
+  details: string | null
+  timestamp: string
+  success: number           // 0 or 1
+}
+
+// ─── Enums / Literals ─────────────────────────────────────────────────────
+
+export type CredentialCategory =
+  | 'social'
+  | 'banking'
+  | 'work'
+  | 'shopping'
+  | 'email'
+  | 'other'
+
+export type ApiKeyCategory =
+  | 'ai'
+  | 'cloud'
+  | 'payment'
+  | 'communication'
+  | 'development'
+  | 'other'
+
+export type PasswordStrength = 'weak' | 'medium' | 'strong'
+
+export type AuditAction =
+  | 'LOGIN_SUCCESS'
+  | 'LOGIN_FAILED'
+  | 'ADD_PASSWORD'
+  | 'EDIT_PASSWORD'
+  | 'DELETE_PASSWORD'
+  | 'ADD_API_KEY'
+  | 'EDIT_API_KEY'
+  | 'DELETE_API_KEY'
+  | 'EXTENSION_SAVE'
+  | 'EXTENSION_AUTOFILL'
+  | 'LOCK'
+  | 'UNLOCK'
+  | 'SETUP_COMPLETE'
+  | 'CHANGE_MASTER_PASSWORD'
+  | 'EXPORT_VAULT'
+  | 'IMPORT_VAULT'
+  | 'CLEAR_DATA'
+  | 'REGENERATE_TOKEN'
+
+// ─── API Responses ────────────────────────────────────────────────────────
+
+export interface ApiResponse<T = unknown> {
+  success: boolean
+  data?: T
+  error?: string
+  message?: string
+}
+
+export interface StatusResponse {
+  running: boolean
+  locked: boolean
+  version: string
+}
+
+export interface TokenResponse {
+  success: boolean
+  token?: string
+}
+
+export interface CredentialApiItem {
+  id: string
+  domain: string
+  website_name: string
+  username: string | null
+  email: string | null
+  password: string          // DECRYPTED for autofill
+  category: CredentialCategory
+}
+
+export interface SaveCredentialResponse {
+  success: boolean
+  action: 'created' | 'exists'
+  id?: string
+  existingId?: string
+}
+
+// ─── UI State ─────────────────────────────────────────────────────────────
+
+export type AppScreen = 'loading' | 'setup' | 'login' | 'main'
+
+export type MainRoute =
+  | '/dashboard'
+  | '/passwords'
+  | '/apikeys'
+  | '/generator'
+  | '/audit'
+  | '/settings'
+
+export interface AppState {
+  screen: AppScreen
+  isLocked: boolean
+  encryptionKey: Buffer | null
+  appPath: string | null
+  extensionConnected: boolean
+  lastActivity: number
+  autoLockTimeout: number   // minutes (0 = never)
+}
+
+// ─── Form Types ────────────────────────────────────────────────────────────
+
+export interface CredentialFormData {
+  website_name: string
+  domain: string
+  username: string
+  email: string
+  password: string
+  category: CredentialCategory
+  notes: string
+  is_favorite: boolean
+}
+
+export interface ApiKeyFormData {
+  service_name: string
+  api_key: string
+  secret_key: string
+  endpoint_url: string
+  description: string
+  category: ApiKeyCategory
+  expiry_date: string
+  is_favorite: boolean
+}
+
+// ─── Encrypted Storage Format ─────────────────────────────────────────────
+
+// Stored as: "iv_hex:authTag_hex:encryptedData_hex"
+export type EncryptedString = string
+
+// ─── Password Strength Result ─────────────────────────────────────────────
+
+export interface PasswordStrengthResult {
+  strength: PasswordStrength
+  score: number             // 0–100
+  checks: {
+    minLength:    boolean
+    uppercase:    boolean
+    lowercase:    boolean
+    numbers:      boolean
+    symbols:      boolean
+    longEnough:   boolean
+    length16Plus: boolean
+    length24Plus: boolean
+  }
+}
+
+// ─── Generator Settings ────────────────────────────────────────────────────
+
+export interface GeneratorSettings {
+  length: number
+  uppercase: boolean
+  lowercase: boolean
+  numbers: boolean
+  symbols: boolean
+  excludeSimilar: boolean
+}
+
+// ─── Export / Import ───────────────────────────────────────────────────────
+
+export interface VaultExport {
+  version: string
+  exportDate: string
+  credentials: Credential[]
+  apiKeys: ApiKey[]
+  // Encrypted with master password before writing to disk
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/store/appStore.ts
+ACTION: Created
+================================================================================
+import { Buffer } from 'buffer'
+import { create } from 'zustand'
+import type { AppScreen, MainRoute } from '../types'
+
+// ─── State Shape ──────────────────────────────────────────────────────────
+
+interface AppStore {
+  // Auth state
+  screen: AppScreen
+  isSetupComplete: boolean
+  isLocked: boolean
+  encryptionKey: Buffer | null
+
+  // App info
+  appPath: string | null
+  appVersion: string
+
+  // Navigation
+  currentRoute: MainRoute
+
+  // Activity tracking (for auto-lock)
+  lastActivity: number
+  autoLockTimeout: number   // minutes; 0 = never
+
+  // Extension
+  extensionConnected: boolean
+  extensionToken: string | null
+
+  // UI
+  isLoading: boolean
+  loadingMessage: string
+
+  // Actions
+  setScreen: (screen: AppScreen) => void
+  setSetupComplete: (complete: boolean) => void
+  unlock: (key: Buffer) => void
+  lock: () => void
+  setAppPath: (path: string) => void
+  setAppVersion: (version: string) => void
+  setRoute: (route: MainRoute) => void
+  updateActivity: () => void
+  setAutoLockTimeout: (minutes: number) => void
+  setExtensionConnected: (connected: boolean) => void
+  setExtensionToken: (token: string | null) => void
+  setLoading: (loading: boolean, message?: string) => void
+}
+
+// ─── Store ────────────────────────────────────────────────────────────────
+
+export const useAppStore = create<AppStore>((set) => ({
+  // Initial state
+  screen:             'loading',
+  isSetupComplete:    false,
+  isLocked:           true,
+  encryptionKey:      null,
+
+  appPath:            null,
+  appVersion:         '1.0.0',
+
+  currentRoute:       '/dashboard',
+
+  lastActivity:       Date.now(),
+  autoLockTimeout:    5,
+
+  extensionConnected: false,
+  extensionToken:     null,
+
+  isLoading:          false,
+  loadingMessage:     '',
+
+  // ─── Actions ───────────────────────────────────────────────────────────
+
+  setScreen: (screen) => set({ screen }),
+
+  setSetupComplete: (complete) =>
+    set({ isSetupComplete: complete, screen: complete ? 'login' : 'setup' }),
+
+  unlock: (key) =>
+    set({
+      isLocked:      false,
+      encryptionKey: key,
+      screen:        'main',
+      lastActivity:  Date.now(),
+    }),
+
+  lock: () =>
+    set({
+      isLocked:      true,
+      encryptionKey: null,   // Wipe key from memory
+      screen:        'login',
+      currentRoute:  '/dashboard',
+    }),
+
+  setAppPath:    (appPath)    => set({ appPath }),
+  setAppVersion: (appVersion) => set({ appVersion }),
+  setRoute:      (route)      => set({ currentRoute: route, lastActivity: Date.now() }),
+
+  updateActivity: () => set({ lastActivity: Date.now() }),
+
+  setAutoLockTimeout: (minutes) => set({ autoLockTimeout: minutes }),
+
+  setExtensionConnected: (connected) => set({ extensionConnected: connected }),
+  setExtensionToken:     (token)     => set({ extensionToken: token }),
+
+  setLoading: (isLoading, loadingMessage = '') =>
+    set({ isLoading, loadingMessage }),
+}))
+
+// ─── Selectors ────────────────────────────────────────────────────────────
+
+export const selectEncryptionKey = (s: AppStore): Buffer | null => s.encryptionKey
+export const selectIsLocked      = (s: AppStore): boolean => s.isLocked
+export const selectCurrentRoute  = (s: AppStore): MainRoute => s.currentRoute
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/services/auth.ts
+ACTION: Created
+================================================================================
+import argon2 from 'argon2'
+import { randomBytes } from 'crypto'
+import { deriveEncryptionKey } from './encryption'
+
+// ─── Constants ────────────────────────────────────────────────────────────
+
+const SALT_LENGTH = 32 // bytes
+
+// argon2id options — tuned for security vs. reasonable verification time
+const ARGON2_OPTIONS: argon2.Options = {
+  type: argon2.argon2id,
+  memoryCost: 65536,    // 64 MB
+  timeCost: 3,          // 3 iterations
+  parallelism: 4,
+}
+
+// ─── Master Password Hashing ──────────────────────────────────────────────
+
+/**
+ * Called during vault setup.
+ * Generates a random salt and hashes the master password with argon2id.
+ * Returns the hash and the salt (both stored in app_settings).
+ * The master password itself is NEVER stored.
+ */
+export async function hashMasterPassword(
+  masterPassword: string
+): Promise<{ hash: string; salt: string }> {
+  const saltBuffer = randomBytes(SALT_LENGTH)
+  const salt = saltBuffer.toString('hex')
+
+  const hash = await argon2.hash(masterPassword, {
+    ...ARGON2_OPTIONS,
+    salt: saltBuffer,
+    raw: false,           // return encoded string
+  })
+
+  return { hash, salt }
+}
+
+/**
+ * Verifies an entered password against the stored hash.
+ * Returns true if correct.
+ */
+export async function verifyMasterPassword(
+  enteredPassword: string,
+  storedHash: string
+): Promise<boolean> {
+  try {
+    return await argon2.verify(storedHash, enteredPassword)
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Derives the AES-256 encryption key from the master password.
+ * Called after successful login; key is kept only in memory.
+ */
+export function deriveKey(masterPassword: string, salt: string): Buffer {
+  return deriveEncryptionKey(masterPassword, salt)
+}
+
+/**
+ * Changes the master password:
+ * 1. Verifies the current password
+ * 2. Re-hashes with a new salt
+ * 3. Returns new hash + salt + the new derived encryption key
+ *    so the caller can re-encrypt all stored data
+ */
+export async function changeMasterPassword(
+  currentPassword: string,
+  newPassword: string,
+  storedHash: string
+): Promise<{ newHash: string; newSalt: string; newKey: Buffer } | null> {
+  const valid = await verifyMasterPassword(currentPassword, storedHash)
+  if (!valid) return null
+
+  const { hash: newHash, salt: newSalt } = await hashMasterPassword(newPassword)
+  const newKey = deriveKey(newPassword, newSalt)
+
+  return { newHash, newSalt, newKey }
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/services/database.ts
+ACTION: Created
+================================================================================
+import Database from 'better-sqlite3'
+import { join } from 'path'
+import { v4 as uuidv4 } from 'uuid'
+import { encrypt, decrypt } from './encryption'
+import type {
+  Credential,
+  ApiKey,
+  AppSetting,
+  AuditLog,
+  AuditAction,
+  CredentialCategory,
+  ApiKeyCategory,
+} from '../types'
+
+// ─── Database Singleton ───────────────────────────────────────────────────
+
+let db: Database.Database | null = null
+
+export function getDatabase(): Database.Database {
+  if (!db) throw new Error('Database not initialized. Call initDatabase() first.')
+  return db
+}
+
+// ─── Initialization ───────────────────────────────────────────────────────
+
+/**
+ * Opens (or creates) the SQLite database and creates all tables.
+ * Called once from the Electron main process at startup.
+ */
+export function initDatabase(appDataPath: string): void {
+  const dbPath = join(appDataPath, 'securevault.db')
+  db = new Database(dbPath)
+
+  // Enable WAL for better performance
+  db.pragma('journal_mode = WAL')
+  db.pragma('foreign_keys = ON')
+
+  createTables()
+  seedSettings()
+}
+
+export function closeDatabase(): void {
+  if (db) {
+    db.close()
+    db = null
+  }
+}
+
+// ─── Table Creation ───────────────────────────────────────────────────────
+
+function createTables(): void {
+  const database = getDatabase()
+
+  database.exec(`
+    CREATE TABLE IF NOT EXISTS credentials (
+      id               TEXT PRIMARY KEY,
+      domain           TEXT NOT NULL,
+      website_name     TEXT NOT NULL,
+      username         TEXT,
+      email            TEXT,
+      password         TEXT NOT NULL,
+      notes            TEXT,
+      category         TEXT DEFAULT 'other',
+      favicon_url      TEXT,
+      is_favorite      INTEGER DEFAULT 0,
+      password_strength TEXT,
+      date_created     TEXT NOT NULL,
+      date_modified    TEXT NOT NULL,
+      last_used        TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS api_keys (
+      id               TEXT PRIMARY KEY,
+      service_name     TEXT NOT NULL,
+      api_key          TEXT NOT NULL,
+      secret_key       TEXT,
+      endpoint_url     TEXT,
+      description      TEXT,
+      category         TEXT DEFAULT 'other',
+      expiry_date      TEXT,
+      is_favorite      INTEGER DEFAULT 0,
+      date_created     TEXT NOT NULL,
+      date_modified    TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS app_settings (
+      key              TEXT PRIMARY KEY,
+      value            TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS audit_log (
+      id               TEXT PRIMARY KEY,
+      action           TEXT NOT NULL,
+      details          TEXT,
+      timestamp        TEXT NOT NULL,
+      success          INTEGER
+    );
+  `)
+}
+
+function seedSettings(): void {
+  const database = getDatabase()
+  const insert = database.prepare(`
+    INSERT OR IGNORE INTO app_settings (key, value) VALUES (?, ?)
+  `)
+
+  const defaults: [string, string][] = [
+    ['master_password_hash',  ''],
+    ['master_password_salt',  ''],
+    ['auto_lock_timeout',     '5'],
+    ['theme',                 'dark'],
+    ['extension_token',       ''],
+    ['is_setup_complete',     'false'],
+    ['app_version',           '1.0.0'],
+  ]
+
+  const seedMany = database.transaction(() => {
+    for (const [key, value] of defaults) {
+      insert.run(key, value)
+    }
+  })
+
+  seedMany()
+}
+
+// ─── App Settings ─────────────────────────────────────────────────────────
+
+export function getSetting(key: string): string | null {
+  const row = getDatabase()
+    .prepare('SELECT value FROM app_settings WHERE key = ?')
+    .get(key) as { value: string } | undefined
+
+  return row?.value ?? null
+}
+
+export function setSetting(key: string, value: string): void {
+  getDatabase()
+    .prepare('INSERT OR REPLACE INTO app_settings (key, value) VALUES (?, ?)')
+    .run(key, value)
+}
+
+export function getAllSettings(): Record<string, string> {
+  const rows = getDatabase()
+    .prepare('SELECT key, value FROM app_settings')
+    .all() as AppSetting[]
+
+  return Object.fromEntries(rows.map(r => [r.key, r.value]))
+}
+
+// ─── Credentials CRUD ─────────────────────────────────────────────────────
+
+export function getAllCredentials(encKey: Buffer): Credential[] {
+  const rows = getDatabase()
+    .prepare('SELECT * FROM credentials ORDER BY website_name ASC')
+    .all() as Credential[]
+
+  return rows.map(row => decryptCredential(row, encKey))
+}
+
+export function getCredentialById(id: string, encKey: Buffer): Credential | null {
+  const row = getDatabase()
+    .prepare('SELECT * FROM credentials WHERE id = ?')
+    .get(id) as Credential | undefined
+
+  if (!row) return null
+  return decryptCredential(row, encKey)
+}
+
+export function getCredentialsByDomain(domain: string, encKey: Buffer): Credential[] {
+  const rows = getDatabase()
+    .prepare('SELECT * FROM credentials WHERE domain = ? OR domain LIKE ?')
+    .all(domain, `%.${domain}`) as Credential[]
+
+  return rows.map(row => decryptCredential(row, encKey))
+}
+
+export function createCredential(
+  data: Omit<Credential, 'id' | 'date_created' | 'date_modified' | 'last_used'>,
+  encKey: Buffer
+): Credential {
+  const id = uuidv4()
+  const now = new Date().toISOString()
+
+  const encrypted = encryptCredentialData(data, encKey)
+
+  getDatabase().prepare(`
+    INSERT INTO credentials
+      (id, domain, website_name, username, email, password, notes, category,
+       favicon_url, is_favorite, password_strength, date_created, date_modified, last_used)
+    VALUES
+      (@id, @domain, @website_name, @username, @email, @password, @notes, @category,
+       @favicon_url, @is_favorite, @password_strength, @date_created, @date_modified, @last_used)
+  `).run({
+    id,
+    ...encrypted,
+    date_created: now,
+    date_modified: now,
+    last_used: null,
+  })
+
+  return getCredentialById(id, encKey)!
+}
+
+export function updateCredential(
+  id: string,
+  data: Partial<Omit<Credential, 'id' | 'date_created'>>,
+  encKey: Buffer
+): void {
+  const now = new Date().toISOString()
+
+  // Encrypt updated fields
+  const updates: Record<string, unknown> = { id, date_modified: now }
+
+  if (data.password !== undefined)  updates.password = encrypt(data.password, encKey)
+  if (data.notes !== undefined)     updates.notes = data.notes ? encrypt(data.notes, encKey) : null
+  if (data.domain !== undefined)    updates.domain = data.domain
+  if (data.website_name !== undefined) updates.website_name = data.website_name
+  if (data.username !== undefined)  updates.username = data.username
+  if (data.email !== undefined)     updates.email = data.email
+  if (data.category !== undefined)  updates.category = data.category
+  if (data.favicon_url !== undefined) updates.favicon_url = data.favicon_url
+  if (data.is_favorite !== undefined) updates.is_favorite = data.is_favorite
+  if (data.password_strength !== undefined) updates.password_strength = data.password_strength
+
+  const setClauses = Object.keys(updates)
+    .filter(k => k !== 'id')
+    .map(k => `${k} = @${k}`)
+    .join(', ')
+
+  getDatabase()
+    .prepare(`UPDATE credentials SET ${setClauses} WHERE id = @id`)
+    .run(updates)
+}
+
+export function deleteCredential(id: string): void {
+  getDatabase()
+    .prepare('DELETE FROM credentials WHERE id = ?')
+    .run(id)
+}
+
+export function toggleFavoriteCredential(id: string): void {
+  const current = getDatabase()
+    .prepare('SELECT is_favorite FROM credentials WHERE id = ?')
+    .get(id) as { is_favorite: number } | undefined
+
+  if (!current) return
+
+  const newVal = current.is_favorite ? 0 : 1
+  getDatabase()
+    .prepare('UPDATE credentials SET is_favorite = ? WHERE id = ?')
+    .run(newVal, id)
+}
+
+export function updateLastUsed(id: string): void {
+  getDatabase()
+    .prepare('UPDATE credentials SET last_used = ? WHERE id = ?')
+    .run(new Date().toISOString(), id)
+}
+
+// ─── API Keys CRUD ────────────────────────────────────────────────────────
+
+export function getAllApiKeys(encKey: Buffer): ApiKey[] {
+  const rows = getDatabase()
+    .prepare('SELECT * FROM api_keys ORDER BY service_name ASC')
+    .all() as ApiKey[]
+
+  return rows.map(row => decryptApiKey(row, encKey))
+}
+
+export function getApiKeyById(id: string, encKey: Buffer): ApiKey | null {
+  const row = getDatabase()
+    .prepare('SELECT * FROM api_keys WHERE id = ?')
+    .get(id) as ApiKey | undefined
+
+  if (!row) return null
+  return decryptApiKey(row, encKey)
+}
+
+export function createApiKey(
+  data: Omit<ApiKey, 'id' | 'date_created' | 'date_modified'>,
+  encKey: Buffer
+): ApiKey {
+  const id = uuidv4()
+  const now = new Date().toISOString()
+
+  getDatabase().prepare(`
+    INSERT INTO api_keys
+      (id, service_name, api_key, secret_key, endpoint_url, description,
+       category, expiry_date, is_favorite, date_created, date_modified)
+    VALUES
+      (@id, @service_name, @api_key, @secret_key, @endpoint_url, @description,
+       @category, @expiry_date, @is_favorite, @date_created, @date_modified)
+  `).run({
+    id,
+    service_name:  data.service_name,
+    api_key:       encrypt(data.api_key, encKey),
+    secret_key:    data.secret_key ? encrypt(data.secret_key, encKey) : null,
+    endpoint_url:  data.endpoint_url,
+    description:   data.description,
+    category:      data.category,
+    expiry_date:   data.expiry_date,
+    is_favorite:   data.is_favorite,
+    date_created:  now,
+    date_modified: now,
+  })
+
+  return getApiKeyById(id, encKey)!
+}
+
+export function updateApiKey(
+  id: string,
+  data: Partial<Omit<ApiKey, 'id' | 'date_created'>>,
+  encKey: Buffer
+): void {
+  const now = new Date().toISOString()
+  const updates: Record<string, unknown> = { id, date_modified: now }
+
+  if (data.api_key !== undefined)   updates.api_key = encrypt(data.api_key, encKey)
+  if (data.secret_key !== undefined) updates.secret_key = data.secret_key ? encrypt(data.secret_key, encKey) : null
+  if (data.service_name !== undefined)  updates.service_name = data.service_name
+  if (data.endpoint_url !== undefined)  updates.endpoint_url = data.endpoint_url
+  if (data.description !== undefined)   updates.description = data.description
+  if (data.category !== undefined)      updates.category = data.category
+  if (data.expiry_date !== undefined)   updates.expiry_date = data.expiry_date
+  if (data.is_favorite !== undefined)   updates.is_favorite = data.is_favorite
+
+  const setClauses = Object.keys(updates)
+    .filter(k => k !== 'id')
+    .map(k => `${k} = @${k}`)
+    .join(', ')
+
+  getDatabase()
+    .prepare(`UPDATE api_keys SET ${setClauses} WHERE id = @id`)
+    .run(updates)
+}
+
+export function deleteApiKey(id: string): void {
+  getDatabase()
+    .prepare('DELETE FROM api_keys WHERE id = ?')
+    .run(id)
+}
+
+export function toggleFavoriteApiKey(id: string): void {
+  const current = getDatabase()
+    .prepare('SELECT is_favorite FROM api_keys WHERE id = ?')
+    .get(id) as { is_favorite: number } | undefined
+
+  if (!current) return
+  const newVal = current.is_favorite ? 0 : 1
+  getDatabase()
+    .prepare('UPDATE api_keys SET is_favorite = ? WHERE id = ?')
+    .run(newVal, id)
+}
+
+// ─── Audit Log ────────────────────────────────────────────────────────────
+
+export function addAuditLog(
+  action: AuditAction,
+  details: string | null,
+  success: boolean
+): void {
+  const id = uuidv4()
+  const timestamp = new Date().toISOString()
+
+  getDatabase().prepare(`
+    INSERT INTO audit_log (id, action, details, timestamp, success)
+    VALUES (?, ?, ?, ?, ?)
+  `).run(id, action, details, timestamp, success ? 1 : 0)
+}
+
+export function getAuditLogs(limit: number, offset: number): AuditLog[] {
+  return getDatabase()
+    .prepare('SELECT * FROM audit_log ORDER BY timestamp DESC LIMIT ? OFFSET ?')
+    .all(limit, offset) as AuditLog[]
+}
+
+export function getAuditLogCount(): number {
+  return (getDatabase()
+    .prepare('SELECT COUNT(*) as c FROM audit_log')
+    .get() as { c: number }).c
+}
+
+export function clearAuditLog(): void {
+  getDatabase()
+    .prepare('DELETE FROM audit_log')
+    .run()
+}
+
+// ─── Dashboard Stats ──────────────────────────────────────────────────────
+
+export interface DashboardStats {
+  totalPasswords: number
+  totalApiKeys: number
+  weakPasswords: number
+  strongPasswords: number
+  securityScore: number
+}
+
+export function getDashboardStats(encKey: Buffer): DashboardStats {
+  const db = getDatabase()
+
+  const totalPasswords = (db.prepare('SELECT COUNT(*) as c FROM credentials').get() as { c: number }).c
+  const totalApiKeys   = (db.prepare('SELECT COUNT(*) as c FROM api_keys').get() as { c: number }).c
+  const weakPasswords  = (db.prepare("SELECT COUNT(*) as c FROM credentials WHERE password_strength = 'weak'").get() as { c: number }).c
+  const strongPasswords = (db.prepare("SELECT COUNT(*) as c FROM credentials WHERE password_strength = 'strong'").get() as { c: number }).c
+
+  const securityScore = totalPasswords > 0
+    ? Math.round((strongPasswords / totalPasswords) * 100)
+    : 100
+
+  return { totalPasswords, totalApiKeys, weakPasswords, strongPasswords, securityScore }
+}
+
+// ─── Clear All Data ───────────────────────────────────────────────────────
+
+export function clearAllData(): void {
+  const database = getDatabase()
+  database.exec(`
+    DELETE FROM credentials;
+    DELETE FROM api_keys;
+    DELETE FROM audit_log;
+    DELETE FROM app_settings;
+  `)
+  seedSettings()
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────
+
+function decryptCredential(row: Credential, encKey: Buffer): Credential {
+  return {
+    ...row,
+    password: row.password ? decrypt(row.password, encKey) : '',
+    notes:    row.notes    ? decrypt(row.notes, encKey)    : null,
+  }
+}
+
+function decryptApiKey(row: ApiKey, encKey: Buffer): ApiKey {
+  return {
+    ...row,
+    api_key:    row.api_key    ? decrypt(row.api_key, encKey)    : '',
+    secret_key: row.secret_key ? decrypt(row.secret_key, encKey) : null,
+  }
+}
+
+function encryptCredentialData(
+  data: Omit<Credential, 'id' | 'date_created' | 'date_modified' | 'last_used'>,
+  encKey: Buffer
+): Omit<Credential, 'id' | 'date_created' | 'date_modified' | 'last_used'> {
+  return {
+    ...data,
+    password: encrypt(data.password, encKey),
+    notes:    data.notes ? encrypt(data.notes, encKey) : null,
+  }
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/services/encryption.ts
+ACTION: Created
+================================================================================
+import { createCipheriv, createDecipheriv, randomBytes, pbkdf2Sync } from 'crypto'
+import type { PasswordStrength, PasswordStrengthResult, GeneratorSettings } from '../types'
+
+// ─── Constants ────────────────────────────────────────────────────────────
+
+const ALGORITHM = 'aes-256-gcm'
+const IV_LENGTH = 16    // bytes
+const TAG_LENGTH = 16   // bytes
+const KEY_LENGTH = 32   // bytes (256-bit)
+const PBKDF2_ITERATIONS = 100_000
+const PBKDF2_DIGEST = 'sha256'
+
+// ─── Key Derivation ───────────────────────────────────────────────────────
+
+/**
+ * Derives a 32-byte encryption key from master password using PBKDF2.
+ * Called once on successful login; result kept only in memory.
+ */
+export function deriveEncryptionKey(masterPassword: string, salt: string): Buffer {
+  const saltBuffer = Buffer.from(salt, 'hex')
+  return pbkdf2Sync(
+    masterPassword,
+    saltBuffer,
+    PBKDF2_ITERATIONS,
+    KEY_LENGTH,
+    PBKDF2_DIGEST
+  )
+}
+
+// ─── Encryption ───────────────────────────────────────────────────────────
+
+/**
+ * Encrypts plaintext using AES-256-GCM.
+ * Returns a string in format: "iv_hex:authTag_hex:ciphertext_hex"
+ */
+export function encrypt(plaintext: string, key: Buffer): string {
+  if (!plaintext) return ''
+
+  const iv = randomBytes(IV_LENGTH)
+  const cipher = createCipheriv(ALGORITHM, key, iv)
+
+  const encrypted = Buffer.concat([
+    cipher.update(plaintext, 'utf8'),
+    cipher.final(),
+  ])
+
+  const authTag = cipher.getAuthTag()
+
+  return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted.toString('hex')}`
+}
+
+/**
+ * Decrypts a string produced by encrypt().
+ * Returns the original plaintext or throws if tampered.
+ */
+export function decrypt(encryptedString: string, key: Buffer): string {
+  if (!encryptedString) return ''
+
+  const parts = encryptedString.split(':')
+  if (parts.length !== 3) {
+    throw new Error('Invalid encrypted string format')
+  }
+
+  const [ivHex, authTagHex, ciphertextHex] = parts
+
+  const iv = Buffer.from(ivHex, 'hex')
+  const authTag = Buffer.from(authTagHex, 'hex')
+  const ciphertext = Buffer.from(ciphertextHex, 'hex')
+
+  const decipher = createDecipheriv(ALGORITHM, key, iv)
+  decipher.setAuthTag(authTag)
+
+  const decrypted = Buffer.concat([
+    decipher.update(ciphertext),
+    decipher.final(),
+  ])
+
+  return decrypted.toString('utf8')
+}
+
+// ─── Password Strength ────────────────────────────────────────────────────
+
+/**
+ * Evaluates password strength and returns a detailed result.
+ */
+export function evaluatePasswordStrength(password: string): PasswordStrengthResult {
+  const checks = {
+    minLength:   password.length >= 8,
+    uppercase:   /[A-Z]/.test(password),
+    lowercase:   /[a-z]/.test(password),
+    numbers:     /[0-9]/.test(password),
+    symbols:     /[^A-Za-z0-9]/.test(password),
+    longEnough:  password.length >= 16,
+    length16Plus: password.length >= 16,
+    length24Plus: password.length >= 24,
+  }
+
+  // Score from 0–100
+  let score = 0
+  if (checks.minLength)   score += 20
+  if (checks.uppercase)   score += 15
+  if (checks.lowercase)   score += 15
+  if (checks.numbers)     score += 20
+  if (checks.symbols)     score += 20
+  if (checks.longEnough)  score += 10
+
+  // Extra points for very long passwords
+  if (password.length >= 24) score = Math.min(100, score + 5)
+  if (password.length >= 32) score = Math.min(100, score + 5)
+
+  let strength: PasswordStrength
+  if (score >= 70) {
+    strength = 'strong'
+  } else if (score >= 40) {
+    strength = 'medium'
+  } else {
+    strength = 'weak'
+  }
+
+  return { strength, score, checks }
+}
+
+// ─── Password Generator ───────────────────────────────────────────────────
+
+const CHAR_SETS = {
+  uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  lowercase: 'abcdefghijklmnopqrstuvwxyz',
+  numbers:   '0123456789',
+  symbols:   '!@#$%^&*()-_=+[]{}|;:,.<>?',
+  similar:   'O0lI1',
+}
+
+/**
+ * Generates a cryptographically secure random password.
+ */
+export function generatePassword(settings: GeneratorSettings): string {
+  const {
+    length,
+    uppercase,
+    lowercase,
+    numbers,
+    symbols,
+    excludeSimilar,
+  } = settings
+
+  let charset = ''
+  const required: string[] = []
+
+  if (uppercase) {
+    let chars = CHAR_SETS.uppercase
+    if (excludeSimilar) chars = chars.split('').filter(c => !CHAR_SETS.similar.includes(c)).join('')
+    charset += chars
+    required.push(chars[randomInt(chars.length)])
+  }
+  if (lowercase) {
+    let chars = CHAR_SETS.lowercase
+    if (excludeSimilar) chars = chars.split('').filter(c => !CHAR_SETS.similar.includes(c)).join('')
+    charset += chars
+    required.push(chars[randomInt(chars.length)])
+  }
+  if (numbers) {
+    let chars = CHAR_SETS.numbers
+    if (excludeSimilar) chars = chars.split('').filter(c => !CHAR_SETS.similar.includes(c)).join('')
+    charset += chars
+    required.push(chars[randomInt(chars.length)])
+  }
+  if (symbols) {
+    const chars = CHAR_SETS.symbols
+    charset += chars
+    required.push(chars[randomInt(chars.length)])
+  }
+
+  // Fallback: if no sets selected, use lowercase
+  if (!charset) {
+    charset = CHAR_SETS.lowercase
+  }
+
+  // Fill the rest randomly
+  const remaining = length - required.length
+  const randomPart = Array.from({ length: Math.max(0, remaining) }, () =>
+    charset[randomInt(charset.length)]
+  )
+
+  // Shuffle all characters together
+  const all = [...required, ...randomPart]
+  return shuffle(all).join('')
+}
+
+/**
+ * Cryptographically secure random integer in [0, max)
+ */
+function randomInt(max: number): number {
+  const bytes = randomBytes(4)
+  return bytes.readUInt32BE(0) % max
+}
+
+/**
+ * Fisher-Yates shuffle using crypto random
+ */
+function shuffle<T>(arr: T[]): T[] {
+  const result = [...arr]
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = randomInt(i + 1)
+    ;[result[i], result[j]] = [result[j], result[i]]
+  }
+  return result
+}
+
+// ─── Vault Export Encryption ──────────────────────────────────────────────
+
+/**
+ * Encrypts an entire vault export using a key derived from the master password.
+ * Used for backup files.
+ */
+export function encryptVaultExport(data: string, masterPassword: string): string {
+  const salt = randomBytes(32)
+  const key = pbkdf2Sync(masterPassword, salt, PBKDF2_ITERATIONS, KEY_LENGTH, PBKDF2_DIGEST)
+  const encrypted = encrypt(data, key)
+  return `${salt.toString('hex')}:${encrypted}`
+}
+
+/**
+ * Decrypts a vault export produced by encryptVaultExport().
+ */
+export function decryptVaultExport(encryptedData: string, masterPassword: string): string {
+  const colonIndex = encryptedData.indexOf(':')
+  const saltHex = encryptedData.substring(0, 64)           // 32 bytes = 64 hex chars
+  const rest = encryptedData.substring(65)                  // skip salt + ':'
+  const salt = Buffer.from(saltHex, 'hex')
+  const key = pbkdf2Sync(masterPassword, salt, PBKDF2_ITERATIONS, KEY_LENGTH, PBKDF2_DIGEST)
+  return decrypt(rest, key)
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/services/passwordUtils.ts
+ACTION: Created
+================================================================================
+import type { PasswordStrength, PasswordStrengthResult, GeneratorSettings } from '../types'
+
+// ─── Password Strength ────────────────────────────────────────────────────
+
+export function evaluatePasswordStrength(password: string): PasswordStrengthResult {
+  const checks = {
+    minLength:    password.length >= 8,
+    uppercase:    /[A-Z]/.test(password),
+    lowercase:    /[a-z]/.test(password),
+    numbers:      /[0-9]/.test(password),
+    symbols:      /[^A-Za-z0-9]/.test(password),
+    longEnough:   password.length >= 16,
+    length16Plus: password.length >= 16,
+    length24Plus: password.length >= 24,
+  }
+
+  let score = 0
+  if (checks.minLength)   score += 20
+  if (checks.uppercase)   score += 15
+  if (checks.lowercase)   score += 15
+  if (checks.numbers)     score += 20
+  if (checks.symbols)     score += 20
+  if (checks.longEnough)  score += 10
+
+  if (password.length >= 24) score = Math.min(100, score + 5)
+  if (password.length >= 32) score = Math.min(100, score + 5)
+
+  let strength: PasswordStrength
+  if (score >= 70) {
+    strength = 'strong'
+  } else if (score >= 40) {
+    strength = 'medium'
+  } else {
+    strength = 'weak'
+  }
+
+  return { strength, score, checks }
+}
+
+// ─── Password Generator ───────────────────────────────────────────────────
+
+const CHAR_SETS = {
+  uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  lowercase: 'abcdefghijklmnopqrstuvwxyz',
+  numbers:   '0123456789',
+  symbols:   '!@#$%^&*()-_=+[]{}|;:,.<>?',
+  similar:   'O0lI1',
+}
+
+export function generatePassword(settings: GeneratorSettings): string {
+  const {
+    length,
+    uppercase,
+    lowercase,
+    numbers,
+    symbols,
+    excludeSimilar,
+  } = settings
+
+  let charset = ''
+  const required: string[] = []
+
+  if (uppercase) {
+    let chars = CHAR_SETS.uppercase
+    if (excludeSimilar) chars = chars.split('').filter(c => !CHAR_SETS.similar.includes(c)).join('')
+    charset += chars
+    required.push(chars[randomInt(chars.length)])
+  }
+  if (lowercase) {
+    let chars = CHAR_SETS.lowercase
+    if (excludeSimilar) chars = chars.split('').filter(c => !CHAR_SETS.similar.includes(c)).join('')
+    charset += chars
+    required.push(chars[randomInt(chars.length)])
+  }
+  if (numbers) {
+    let chars = CHAR_SETS.numbers
+    if (excludeSimilar) chars = chars.split('').filter(c => !CHAR_SETS.similar.includes(c)).join('')
+    charset += chars
+    required.push(chars[randomInt(chars.length)])
+  }
+  if (symbols) {
+    const chars = CHAR_SETS.symbols
+    charset += chars
+    required.push(chars[randomInt(chars.length)])
+  }
+
+  if (!charset) {
+    charset = CHAR_SETS.lowercase
+  }
+
+  const remaining = length - required.length
+  const randomPart = Array.from({ length: Math.max(0, remaining) }, () =>
+    charset[randomInt(charset.length)]
+  )
+
+  const all = [...required, ...randomPart]
+  return shuffle(all).join('')
+}
+
+function randomInt(max: number): number {
+  const array = new Uint32Array(1)
+  window.crypto.getRandomValues(array)
+  return array[0] % max
+}
+
+function shuffle<T>(arr: T[]): T[] {
+  const result = [...arr]
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = randomInt(i + 1)
+    ;[result[i], result[j]] = [result[j], result[i]]
+  }
+  return result
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/components/Auth/Setup.tsx
+ACTION: Created
+================================================================================
+import { Buffer } from 'buffer'
+import React, { useState, useCallback, useEffect } from 'react'
+import { Shield, Eye, EyeOff, Check, X, AlertTriangle } from 'lucide-react'
+import { evaluatePasswordStrength } from '../../services/passwordUtils'
+import { useAppStore } from '../../store/appStore'
+import type { PasswordStrengthResult } from '../../types'
+
+// ─── Setup Screen ─────────────────────────────────────────────────────────
+
+export default function Setup(): React.ReactElement {
+  const { unlock, setSetupComplete } = useAppStore()
+
+  const [password, setPassword]     = useState('')
+  const [confirm, setConfirm]       = useState('')
+  const [showPass, setShowPass]     = useState(false)
+  const [showConf, setShowConf]     = useState(false)
+  const [isLoading, setIsLoading]   = useState(false)
+  const [error, setError]           = useState('')
+
+  const strength: PasswordStrengthResult = evaluatePasswordStrength(password)
+
+  const passwordsMatch  = password === confirm && confirm.length > 0
+  const meetsMinReqs    = strength.checks.minLength &&
+                          strength.checks.uppercase &&
+                          strength.checks.numbers &&
+                          strength.checks.symbols
+  const canCreate       = meetsMinReqs && passwordsMatch && !isLoading
+
+  const handleCreate = useCallback(async () => {
+    if (!canCreate) return
+    setIsLoading(true)
+    setError('')
+
+    try {
+      const { hash, salt } = await window.electronAPI.auth.hashMasterPassword(password)
+
+      // Store hash + salt (NOT the password itself)
+      await window.electronAPI.db.setSetting('master_password_hash', hash)
+      await window.electronAPI.db.setSetting('master_password_salt', salt)
+      await window.electronAPI.db.setSetting('is_setup_complete', 'true')
+
+      // Derive encryption key and unlock
+      const encKeyUint8 = await window.electronAPI.auth.deriveKey(password, salt)
+      const encKey = Buffer.from(encKeyUint8)
+
+      await window.electronAPI.db.addAuditLog('SETUP_COMPLETE', 'Initial vault setup completed', true)
+
+      setSetupComplete(true)
+      unlock(encKey)
+    } catch (err: any) {
+      console.error('Setup error:', err)
+      setError(`Setup failed: ${err?.message || err || 'Please try again.'}`)
+      setIsLoading(false)
+    }
+  }, [canCreate, password, unlock, setSetupComplete])
+
+  // Allow Enter key to submit
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && canCreate) handleCreate()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [canCreate, handleCreate])
+
+  const strengthColor =
+    strength.strength === 'strong'  ? '#22c55e' :
+    strength.strength === 'medium'  ? '#f59e0b' : '#ef4444'
+
+  const strengthLabel =
+    strength.strength === 'strong'  ? 'Strong' :
+    strength.strength === 'medium'  ? 'Medium' : 'Weak'
+
+  return (
+    <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center p-6">
+      <div className="w-full max-w-md animate-in">
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-[#6366f1]/10 border border-[#6366f1]/20 mb-5">
+            <Shield className="w-10 h-10 text-[#6366f1]" />
+          </div>
+          <h1 className="text-3xl font-bold text-[#f1f5f9]">
+            Secure<span className="text-gradient">Vault</span>
+          </h1>
+          <p className="text-[#94a3b8] mt-2">Your passwords, protected forever</p>
+        </div>
+
+        {/* Card */}
+        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl p-8">
+          <h2 className="text-xl font-semibold text-[#f1f5f9] mb-1">Create Your Vault</h2>
+          <p className="text-[#94a3b8] text-sm mb-6">
+            Choose a strong master password. This cannot be recovered if lost.
+          </p>
+
+          {/* Master Password */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-[#94a3b8] mb-2">
+              Create Master Password
+            </label>
+            <div className="relative">
+              <input
+                id="setup-password"
+                type={showPass ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter master password"
+                className="input-field pr-12"
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPass(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#475569] hover:text-[#94a3b8] transition-colors"
+              >
+                {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+
+            {/* Strength bar */}
+            {password.length > 0 && (
+              <div className="mt-2">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-[#475569]">Strength</span>
+                  <span className="text-xs font-medium" style={{ color: strengthColor }}>
+                    {strengthLabel}
+                  </span>
+                </div>
+                <div className="h-1.5 bg-[#2a2a2a] rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{ width: `${strength.score}%`, backgroundColor: strengthColor }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Confirm Password */}
+          <div className="mb-5">
+            <label className="block text-sm font-medium text-[#94a3b8] mb-2">
+              Confirm Master Password
+            </label>
+            <div className="relative">
+              <input
+                id="setup-confirm"
+                type={showConf ? 'text' : 'password'}
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                placeholder="Confirm master password"
+                className={`input-field pr-12 ${
+                  confirm.length > 0 && !passwordsMatch
+                    ? 'border-[#ef4444] focus:border-[#ef4444] focus:ring-[#ef4444]/30'
+                    : ''
+                }`}
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConf(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#475569] hover:text-[#94a3b8] transition-colors"
+              >
+                {showConf ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            {confirm.length > 0 && !passwordsMatch && (
+              <p className="text-[#ef4444] text-xs mt-1">Passwords do not match</p>
+            )}
+          </div>
+
+          {/* Requirements checklist */}
+          {password.length > 0 && (
+            <div className="mb-5 bg-[#0f0f0f] rounded-lg p-3 space-y-1.5">
+              <RequirementCheck met={strength.checks.minLength} label="At least 8 characters" />
+              <RequirementCheck met={strength.checks.uppercase}  label="Contains uppercase letter" />
+              <RequirementCheck met={strength.checks.numbers}    label="Contains a number" />
+              <RequirementCheck met={strength.checks.symbols}    label="Contains special character" />
+            </div>
+          )}
+
+          {/* Error */}
+          {error && (
+            <div className="mb-4 flex items-center gap-2 text-[#ef4444] text-sm bg-[#ef4444]/10 rounded-lg p-3">
+              <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+              {error}
+            </div>
+          )}
+
+          {/* Create Button */}
+          <button
+            id="create-vault-btn"
+            onClick={handleCreate}
+            disabled={!canCreate}
+            className="btn-primary w-full justify-center py-3 text-base"
+          >
+            {isLoading ? (
+              <>
+                <LoadingSpinner />
+                Creating Vault...
+              </>
+            ) : (
+              <>
+                <Shield className="w-5 h-5" />
+                Create Vault
+              </>
+            )}
+          </button>
+
+          {/* Warning */}
+          <div className="mt-5 flex items-start gap-2 text-[#f59e0b] text-xs bg-[#f59e0b]/10 rounded-lg p-3">
+            <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+            <span>
+              This password <strong>cannot be recovered</strong>. If you forget it, all data will
+              be permanently lost. Store it somewhere safe.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Sub-components ───────────────────────────────────────────────────────
+
+function RequirementCheck({ met, label }: { met: boolean; label: string }): React.ReactElement {
+  return (
+    <div className="flex items-center gap-2">
+      {met ? (
+        <Check className="w-3.5 h-3.5 text-[#22c55e] flex-shrink-0" />
+      ) : (
+        <X className="w-3.5 h-3.5 text-[#475569] flex-shrink-0" />
+      )}
+      <span className={`text-xs ${met ? 'text-[#22c55e]' : 'text-[#475569]'}`}>{label}</span>
+    </div>
+  )
+}
+
+function LoadingSpinner(): React.ReactElement {
+  return (
+    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  )
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/components/Auth/Login.tsx
+ACTION: Created
+================================================================================
+import { Buffer } from 'buffer'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { Shield, Eye, EyeOff, AlertTriangle, Clock } from 'lucide-react'
+import { useAppStore } from '../../store/appStore'
+
+const MAX_WRONG_ATTEMPTS = 5
+const LOCKOUT_MINUTES   = 5
+
+// ─── Login Screen ─────────────────────────────────────────────────────────
+
+export default function Login(): React.ReactElement {
+  const { unlock } = useAppStore()
+
+  const [password, setPassword]       = useState('')
+  const [showPass, setShowPass]       = useState(false)
+  const [isLoading, setIsLoading]     = useState(false)
+  const [error, setError]             = useState('')
+  const [shake, setShake]             = useState(false)
+  const [attempts, setAttempts]       = useState(0)
+  const [lockedUntil, setLockedUntil] = useState<Date | null>(null)
+  const [timeLeft, setTimeLeft]       = useState(0)
+
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Focus input on mount
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
+  // Countdown timer for lockout
+  useEffect(() => {
+    if (!lockedUntil) return
+
+    const tick = setInterval(() => {
+      const remaining = Math.ceil((lockedUntil.getTime() - Date.now()) / 1000)
+      if (remaining <= 0) {
+        setLockedUntil(null)
+        setTimeLeft(0)
+        setAttempts(0)
+        clearInterval(tick)
+      } else {
+        setTimeLeft(remaining)
+      }
+    }, 1000)
+
+    return () => clearInterval(tick)
+  }, [lockedUntil])
+
+  const triggerShake = useCallback(() => {
+    setShake(true)
+    setTimeout(() => setShake(false), 600)
+  }, [])
+
+  const handleUnlock = useCallback(async () => {
+    if (!password || isLoading || lockedUntil) return
+
+    setIsLoading(true)
+    setError('')
+
+    try {
+      const storedHash = await window.electronAPI.db.getSetting('master_password_hash') ?? ''
+      const storedSalt = await window.electronAPI.db.getSetting('master_password_salt') ?? ''
+
+      const correct = await window.electronAPI.auth.verifyMasterPassword(password, storedHash)
+
+      if (correct) {
+        const encKeyUint8 = await window.electronAPI.auth.deriveKey(password, storedSalt)
+        const encKey = Buffer.from(encKeyUint8)
+        await window.electronAPI.db.addAuditLog('LOGIN_SUCCESS', null, true)
+        setAttempts(0)
+        unlock(encKey)
+      } else {
+        const newAttempts = attempts + 1
+        setAttempts(newAttempts)
+
+        await window.electronAPI.db.addAuditLog('LOGIN_FAILED', `Attempt ${newAttempts}`, false)
+
+        if (newAttempts >= MAX_WRONG_ATTEMPTS) {
+          const lockUntil = new Date(Date.now() + LOCKOUT_MINUTES * 60 * 1000)
+          setLockedUntil(lockUntil)
+          setError(`Too many failed attempts. Locked for ${LOCKOUT_MINUTES} minutes.`)
+        } else if (newAttempts >= 3) {
+          setError(`Incorrect password. ${MAX_WRONG_ATTEMPTS - newAttempts} attempts remaining.`)
+        } else {
+          setError('Incorrect password. Please try again.')
+        }
+
+        triggerShake()
+        setPassword('')
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.')
+      triggerShake()
+    } finally {
+      setIsLoading(false)
+    }
+  }, [password, isLoading, lockedUntil, attempts, unlock, triggerShake])
+
+  // Enter key handler
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && password && !lockedUntil) handleUnlock()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [handleUnlock, password, lockedUntil])
+
+  const isLocked = Boolean(lockedUntil)
+
+  return (
+    <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center p-6">
+      <div className="w-full max-w-md animate-in">
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-[#6366f1]/10 border border-[#6366f1]/20 mb-5">
+            <Shield className="w-10 h-10 text-[#6366f1]" />
+          </div>
+          <h1 className="text-3xl font-bold text-[#f1f5f9]">
+            Secure<span className="text-gradient">Vault</span>
+          </h1>
+          <p className="text-[#94a3b8] mt-2">Welcome back</p>
+        </div>
+
+        {/* Card */}
+        <div className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-2xl p-8">
+          <h2 className="text-xl font-semibold text-[#f1f5f9] mb-1">Unlock Your Vault</h2>
+          <p className="text-[#94a3b8] text-sm mb-6">Enter your master password to continue</p>
+
+          {/* Lockout message */}
+          {isLocked && (
+            <div className="mb-4 flex items-center gap-2 text-[#f59e0b] bg-[#f59e0b]/10 rounded-lg p-3">
+              <Clock className="w-4 h-4 flex-shrink-0" />
+              <span className="text-sm">
+                Locked due to too many failed attempts.
+                Try again in <strong>{Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}</strong>
+              </span>
+            </div>
+          )}
+
+          {/* Password field */}
+          <div className="mb-5">
+            <label className="block text-sm font-medium text-[#94a3b8] mb-2">
+              Master Password
+            </label>
+            <div className={`relative ${shake ? 'animate-[shake_0.5s_ease-in-out]' : ''}`}>
+              <input
+                ref={inputRef}
+                id="login-password"
+                type={showPass ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setError('') }}
+                placeholder="Enter master password"
+                disabled={isLocked || isLoading}
+                className={`input-field pr-12 ${
+                  error ? 'border-[#ef4444] focus:border-[#ef4444] focus:ring-[#ef4444]/30' : ''
+                } ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPass(v => !v)}
+                disabled={isLocked}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#475569] hover:text-[#94a3b8] transition-colors disabled:opacity-50"
+              >
+                {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+
+            {/* Error */}
+            {error && !isLocked && (
+              <div className="mt-2 flex items-center gap-1.5 text-[#ef4444] text-xs">
+                <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                {error}
+              </div>
+            )}
+          </div>
+
+          {/* Attempts warning */}
+          {attempts >= 3 && !isLocked && (
+            <div className="mb-4 flex items-center gap-2 text-[#f59e0b] text-xs bg-[#f59e0b]/10 rounded-lg p-3">
+              <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+              Warning: {MAX_WRONG_ATTEMPTS - attempts} attempt{MAX_WRONG_ATTEMPTS - attempts !== 1 ? 's' : ''} left before lockout
+            </div>
+          )}
+
+          {/* Unlock button */}
+          <button
+            id="unlock-btn"
+            onClick={handleUnlock}
+            disabled={!password || isLoading || isLocked}
+            className="btn-primary w-full justify-center py-3 text-base"
+          >
+            {isLoading ? (
+              <>
+                <LoadingSpinner />
+                Verifying...
+              </>
+            ) : (
+              <>
+                <Shield className="w-5 h-5" />
+                Unlock Vault
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function LoadingSpinner(): React.ReactElement {
+  return (
+    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  )
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/components/Layout/MainLayout.tsx
+ACTION: Created
+================================================================================
+import React from 'react'
+import Sidebar from './Sidebar'
+import Dashboard from '../Dashboard/Dashboard'
+import PasswordList from '../Passwords/PasswordList'
+import ApiKeyList from '../ApiKeys/ApiKeyList'
+import PasswordGenerator from '../Generator/PasswordGenerator'
+import AuditLogView from '../Audit/AuditLogView'
+import SettingsView from '../Settings/Settings'
+import { useAppStore } from '../../store/appStore'
+import type { MainRoute } from '../../types'
+
+// ─── Route → Component Map ────────────────────────────────────────────────
+
+const ROUTE_COMPONENTS: Record<MainRoute, React.ReactElement> = {
+  '/dashboard': <Dashboard />,
+  '/passwords': <PasswordList />,
+  '/apikeys':   <ApiKeyList />,
+  '/generator': <PasswordGenerator />,
+  '/audit':     <AuditLogView />,
+  '/settings':  <SettingsView />,
+}
+
+// ─── Main Layout ──────────────────────────────────────────────────────────
+
+export default function MainLayout(): React.ReactElement {
+  const currentRoute = useAppStore(s => s.currentRoute)
+
+  return (
+    <div className="flex h-screen bg-[#0f0f0f] overflow-hidden">
+      <Sidebar />
+
+      {/* Content area */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="animate-in">
+          {ROUTE_COMPONENTS[currentRoute] ?? <Dashboard />}
+        </div>
+      </main>
+    </div>
+  )
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/components/Layout/Sidebar.tsx
+ACTION: Created
+================================================================================
+import React from 'react'
+import {
+  LayoutDashboard,
+  KeyRound,
+  Key,
+  Wand2,
+  ClipboardList,
+  Settings,
+  Lock,
+  ShieldCheck,
+  Zap,
+} from 'lucide-react'
+import { useAppStore } from '../../store/appStore'
+import type { MainRoute } from '../../types'
+
+interface NavItem {
+  route:   MainRoute
+  icon:    React.ReactNode
+  label:   string
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { route: '/dashboard', icon: <LayoutDashboard className="w-4 h-4" />, label: 'Dashboard'  },
+  { route: '/passwords', icon: <KeyRound        className="w-4 h-4" />, label: 'Passwords'  },
+  { route: '/apikeys',   icon: <Key             className="w-4 h-4" />, label: 'API Keys'   },
+  { route: '/generator', icon: <Wand2           className="w-4 h-4" />, label: 'Generator'  },
+  { route: '/audit',     icon: <ClipboardList   className="w-4 h-4" />, label: 'Audit Log'  },
+  { route: '/settings',  icon: <Settings        className="w-4 h-4" />, label: 'Settings'   },
+]
+
+export default function Sidebar(): React.ReactElement {
+  const { currentRoute, setRoute, lock, extensionConnected, appVersion } = useAppStore()
+
+  const handleLock = async () => {
+    await window.electronAPI.db.addAuditLog('LOCK', 'Locked by user', true)
+    lock()
+  }
+
+  return (
+    <aside className="w-[250px] flex-shrink-0 h-full bg-[#10121b] border-r border-white/10 flex flex-col no-select shadow-2xl z-20">
+      {/* Brand Header */}
+      <div className="px-6 py-6 border-b border-white/10 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 p-0.5 shadow-lg shadow-indigo-500/25 flex items-center justify-center">
+          <div className="w-full h-full bg-[#10121b] rounded-[10px] flex items-center justify-center">
+            <ShieldCheck className="w-5 h-5 text-indigo-400" />
+          </div>
+        </div>
+        <div>
+          <h1 className="font-extrabold text-white text-lg tracking-tight flex items-center gap-1">
+            Secure<span className="text-gradient">Vault</span>
+          </h1>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Enterprise Encryption</p>
+        </div>
+      </div>
+
+      {/* Navigation Links */}
+      <nav className="flex-1 px-3.5 py-5 space-y-1.5 overflow-y-auto custom-scrollbar">
+        {NAV_ITEMS.map(({ route, icon, label }) => {
+          const isActive = currentRoute === route
+          return (
+            <button
+              key={route}
+              id={`nav-${label.toLowerCase().replace(' ', '-')}`}
+              onClick={() => setRoute(route)}
+              className={`
+                w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-semibold
+                transition-all duration-200 text-left relative group
+                ${isActive
+                  ? 'bg-gradient-to-r from-indigo-600/20 to-purple-600/10 text-white border border-indigo-500/30 shadow-md shadow-indigo-500/10'
+                  : 'text-slate-400 hover:bg-white/[0.04] hover:text-slate-200 border border-transparent'
+                }
+              `}
+            >
+              {/* Active Indicator Bar */}
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-indigo-500 rounded-r-full shadow-[0_0_10px_#6366f1]" />
+              )}
+              <span className={`transition-transform duration-200 group-hover:scale-110 ${isActive ? 'text-indigo-400' : 'text-slate-500'}`}>
+                {icon}
+              </span>
+              <span>{label}</span>
+            </button>
+          )
+        })}
+      </nav>
+
+      {/* Footer Section */}
+      <div className="p-4 border-t border-white/10 space-y-3 bg-[#0d0e16]">
+        {/* Extension Connection Badge */}
+        <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+          <div className="flex items-center gap-2">
+            <Zap className={`w-3.5 h-3.5 ${extensionConnected ? 'text-emerald-400 animate-pulse' : 'text-slate-500'}`} />
+            <span className="text-xs font-medium text-slate-300">
+              Extension {extensionConnected ? 'Connected' : 'Offline'}
+            </span>
+          </div>
+          <div className={`w-2 h-2 rounded-full ${extensionConnected ? 'bg-emerald-400 shadow-[0_0_8px_#22c55e]' : 'bg-slate-600'}`} />
+        </div>
+
+        {/* Lock Vault Button */}
+        <button
+          id="lock-button"
+          onClick={handleLock}
+          className="w-full flex items-center justify-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider
+            text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 hover:border-rose-500/40
+            transition-all duration-200 active:scale-[0.98]"
+        >
+          <Lock className="w-4 h-4" />
+          Lock Vault
+        </button>
+
+        {/* App Version */}
+        <p className="text-center text-slate-500 text-[11px] font-mono">v{appVersion}</p>
+      </div>
+    </aside>
+  )
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/components/Dashboard/Dashboard.tsx
+ACTION: Created
+================================================================================
+import React, { useEffect, useState } from 'react'
+import {
+  KeyRound, Key, ShieldAlert, ShieldCheck,
+  Plus, Clock, CheckCircle2, XCircle, TrendingUp, Sparkles, ChevronRight
+} from 'lucide-react'
+import { useAppStore } from '../../store/appStore'
+import type { AuditLog } from '../../types'
+
+interface Stats {
+  totalPasswords: number
+  totalApiKeys: number
+  weakPasswords: number
+  strongPasswords: number
+  securityScore: number
+}
+
+export default function Dashboard(): React.ReactElement {
+  const { encryptionKey, setRoute } = useAppStore()
+  const [stats, setStats]         = useState<Stats | null>(null)
+  const [recentLogs, setRecentLogs] = useState<AuditLog[]>([])
+
+  const hour     = new Date().getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
+  const timeStr  = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+
+  useEffect(() => {
+    if (!encryptionKey) return
+    async function loadData() {
+      try {
+        const statsData = await window.electronAPI.db.getDashboardStats(encryptionKey.toString('hex'))
+        const logsData  = await window.electronAPI.db.getAuditLogs(5, 0)
+        setStats(statsData)
+        setRecentLogs(logsData)
+      } catch (err) {
+        console.error('Dashboard load failed:', err)
+      }
+    }
+    loadData()
+  }, [encryptionKey])
+
+  const scoreLabel =
+    !stats ? '' :
+    stats.securityScore >= 71 ? 'Optimal Security' :
+    stats.securityScore >= 41 ? 'Fair Security'  : 'Action Required'
+
+  const scoreColor =
+    !stats ? '#f1f5f9' :
+    stats.securityScore >= 71 ? '#4ade80' :
+    stats.securityScore >= 41 ? '#fbbf24' : '#f87171'
+
+  return (
+    <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-8">
+      {/* Welcome Banner */}
+      <div className="bg-gradient-to-r from-indigo-900/40 via-purple-900/30 to-[#121420] border border-indigo-500/20 rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
+        <div className="absolute right-0 top-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-bold mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400" /> Vault Security Hub
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              {greeting}, <span className="text-gradient">User</span>
+            </h1>
+            <p className="text-sm text-slate-300 mt-1 max-w-lg">
+              Vault active and protected with AES-256 encryption. Local time: {timeStr}.
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => setRoute('/passwords')}
+              className="btn-primary"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Credential</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Cards Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <StatCard
+          icon={<KeyRound className="w-5 h-5 text-indigo-400" />}
+          gradient="from-indigo-500/20 to-purple-500/20"
+          border="border-indigo-500/30"
+          label="Total Passwords"
+          value={stats?.totalPasswords ?? 0}
+          sub="Stored in local database"
+        />
+
+        <StatCard
+          icon={<Key className="w-5 h-5 text-purple-400" />}
+          gradient="from-purple-500/20 to-pink-500/20"
+          border="border-purple-500/30"
+          label="Total API Keys"
+          value={stats?.totalApiKeys ?? 0}
+          sub="Encrypted secrets"
+        />
+
+        <StatCard
+          icon={<ShieldAlert className="w-5 h-5 text-rose-400" />}
+          gradient="from-rose-500/20 to-amber-500/20"
+          border="border-rose-500/30"
+          label="Weak Passwords"
+          value={stats?.weakPasswords ?? 0}
+          sub={stats?.weakPasswords ? 'Consider strengthening' : 'All passwords strong'}
+          warning={stats?.weakPasswords ? stats.weakPasswords > 0 : false}
+        />
+
+        <StatCard
+          icon={<TrendingUp className="w-5 h-5" style={{ color: scoreColor }} />}
+          gradient="from-emerald-500/20 to-teal-500/20"
+          border="border-emerald-500/30"
+          label="Security Health"
+          value={stats ? `${stats.securityScore}%` : '—'}
+          valueColor={scoreColor}
+          sub={scoreLabel}
+        />
+      </div>
+
+      {/* Activity & Quick Shortcuts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Activity (2 Cols) */}
+        <div className="lg:col-span-2 bg-[#121420]/80 border border-white/10 rounded-2xl p-6 shadow-xl flex flex-col">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                <Clock className="w-4 h-4" />
+              </div>
+              <h2 className="font-bold text-white text-base">Recent Audit Events</h2>
+            </div>
+            <button
+              onClick={() => setRoute('/audit')}
+              className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+            >
+              View Full Log <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          {recentLogs.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center py-10 text-slate-500 text-xs">
+              No audit log entries recorded yet.
+            </div>
+          ) : (
+            <div className="space-y-3 flex-1">
+              {recentLogs.map(log => (
+                <div key={log.id} className="flex items-start gap-3 p-3.5 rounded-xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-colors">
+                  <div className="mt-0.5 flex-shrink-0">
+                    {log.success ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    ) : (
+                      <XCircle className="w-4 h-4 text-rose-400" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-bold text-slate-200">
+                        {formatAction(log.action)}
+                      </p>
+                      <span className="text-[10px] text-slate-500 font-mono">
+                        {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    {log.details && (
+                      <p className="text-xs text-slate-400 mt-0.5 truncate">{log.details}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Quick Actions (1 Col) */}
+        <div className="bg-[#121420]/80 border border-white/10 rounded-2xl p-6 shadow-xl space-y-4">
+          <div className="flex items-center gap-2.5 mb-2">
+            <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <h2 className="font-bold text-white text-base">Quick Actions</h2>
+          </div>
+
+          <QuickAddButton
+            icon={<KeyRound className="w-5 h-5 text-indigo-400" />}
+            title="Manage Passwords"
+            description="View or add website passwords"
+            onClick={() => setRoute('/passwords')}
+          />
+          <QuickAddButton
+            icon={<Key className="w-5 h-5 text-purple-400" />}
+            title="API Keys Vault"
+            description="Manage service keys & tokens"
+            onClick={() => setRoute('/apikeys')}
+          />
+          <QuickAddButton
+            icon={<ShieldCheck className="w-5 h-5 text-emerald-400" />}
+            title="Password Generator"
+            description="Create ultra-strong passwords"
+            onClick={() => setRoute('/generator')}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function StatCard({
+  icon, gradient, border, label, value, valueColor, sub, warning
+}: {
+  icon: React.ReactNode
+  gradient: string
+  border: string
+  label: string
+  value: string | number
+  valueColor?: string
+  sub?: string
+  warning?: boolean
+}): React.ReactElement {
+  return (
+    <div className={`bg-[#121420]/80 border ${warning ? 'border-rose-500/40 bg-rose-500/5' : 'border-white/10'} rounded-2xl p-5 shadow-xl relative overflow-hidden card-hover`}>
+      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} ${border} border flex items-center justify-center mb-3 shadow-inner`}>
+        {icon}
+      </div>
+      <div className="text-3xl font-extrabold tracking-tight mb-1" style={{ color: valueColor || '#ffffff' }}>
+        {value}
+      </div>
+      <div className="text-xs font-semibold text-slate-300">{label}</div>
+      {sub && <div className="text-[11px] text-slate-500 mt-1">{sub}</div>}
+    </div>
+  )
+}
+
+function QuickAddButton({
+  icon, title, description, onClick,
+}: {
+  icon: React.ReactNode
+  title: string
+  description: string
+  onClick: () => void
+}): React.ReactElement {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full flex items-center justify-between p-4 rounded-xl bg-white/[0.03] border border-white/5
+        hover:border-indigo-500/30 hover:bg-white/[0.06] transition-all duration-200 text-left group"
+    >
+      <div className="flex items-center gap-3.5 min-w-0">
+        <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 group-hover:scale-105 transition-transform flex-shrink-0">
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <p className="text-xs font-bold text-white group-hover:text-indigo-300 transition-colors">{title}</p>
+          <p className="text-[11px] text-slate-400 truncate">{description}</p>
+        </div>
+      </div>
+      <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-white group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+    </button>
+  )
+}
+
+function formatAction(action: string): string {
+  return action.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/components/Passwords/PasswordList.tsx
+ACTION: Created
+================================================================================
+import React, { useState, useEffect, useCallback } from 'react'
+import { Plus, Search, Heart, KeyRound, Filter, ArrowUpDown } from 'lucide-react'
+import { useAppStore } from '../../store/appStore'
+import PasswordCard from './PasswordCard'
+import AddPassword from './AddPassword'
+import type { Credential, CredentialCategory, PasswordStrength } from '../../types'
+
+export default function PasswordList(): React.ReactElement {
+  const { encryptionKey } = useAppStore()
+
+  const [credentials, setCredentials] = useState<Credential[]>([])
+  const [search,       setSearch]     = useState('')
+  const [category,     setCategory]   = useState<CredentialCategory | 'all'>('all')
+  const [strengthFilter, setStrengthFilter] = useState<PasswordStrength | 'all'>('all')
+  const [sort,         setSort]       = useState<'name-az' | 'name-za' | 'newest' | 'oldest' | 'last-used'>('name-az')
+  const [favOnly,      setFavOnly]    = useState(false)
+  const [showModal,    setShowModal]  = useState(false)
+  const [editTarget,   setEditTarget] = useState<Credential | undefined>()
+
+  const load = useCallback(async () => {
+    if (!encryptionKey) return
+    try {
+      const data = await window.electronAPI.db.getAllCredentials(encryptionKey.toString('hex'))
+      setCredentials(data)
+    } catch (err) {
+      console.error('Failed to load credentials:', err)
+    }
+  }, [encryptionKey])
+
+  useEffect(() => { load() }, [load])
+
+  // Filter + sort
+  const filtered = credentials
+    .filter(c => {
+      if (favOnly && !c.is_favorite) return false
+      if (category !== 'all' && c.category !== category) return false
+      if (strengthFilter !== 'all' && c.password_strength !== strengthFilter) return false
+      if (search) {
+        const q = search.toLowerCase()
+        return (
+          c.website_name.toLowerCase().includes(q) ||
+          c.domain.toLowerCase().includes(q) ||
+          (c.username?.toLowerCase().includes(q) ?? false) ||
+          (c.email?.toLowerCase().includes(q) ?? false)
+        )
+      }
+      return true
+    })
+    .sort((a, b) => {
+      switch (sort) {
+        case 'name-az':  return a.website_name.localeCompare(b.website_name)
+        case 'name-za':  return b.website_name.localeCompare(a.website_name)
+        case 'newest':   return new Date(b.date_created).getTime() - new Date(a.date_created).getTime()
+        case 'oldest':   return new Date(a.date_created).getTime() - new Date(b.date_created).getTime()
+        case 'last-used':
+          if (!a.last_used) return 1
+          if (!b.last_used) return -1
+          return new Date(b.last_used).getTime() - new Date(a.last_used).getTime()
+        default: return 0
+      }
+    })
+
+  const handleEdit = (c: Credential) => {
+    setEditTarget(c)
+    setShowModal(true)
+  }
+
+  const handleCloseModal = () => {
+    setShowModal(false)
+    setEditTarget(undefined)
+  }
+
+  return (
+    <div className="p-6 sm:p-8 max-w-7xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-black text-white tracking-tight">Passwords</h1>
+            <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold">
+              {credentials.length} Total
+            </span>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">Manage and auto-fill encrypted password vault items</p>
+        </div>
+
+        <button
+          id="add-password-btn"
+          onClick={() => setShowModal(true)}
+          className="btn-primary flex-shrink-0"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Add Password</span>
+        </button>
+      </div>
+
+      {/* Search & Filter Controls */}
+      <div className="bg-[#121420]/80 border border-white/10 rounded-2xl p-4 flex flex-wrap items-center gap-3 shadow-lg">
+        {/* Search */}
+        <div className="relative flex-1 min-w-[240px]">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400 pointer-events-none" />
+          <input
+            id="password-search"
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search accounts, domains, or emails..."
+            className="input-field pl-10"
+          />
+        </div>
+
+        {/* Category filter */}
+        <div className="relative">
+          <select
+            value={category}
+            onChange={e => setCategory(e.target.value as CredentialCategory | 'all')}
+            className="input-field w-auto text-xs font-semibold py-2.5 cursor-pointer capitalize"
+          >
+            <option value="all" className="bg-[#141622]">All Categories</option>
+            <option value="social" className="bg-[#141622]">Social</option>
+            <option value="banking" className="bg-[#141622]">Banking</option>
+            <option value="work" className="bg-[#141622]">Work</option>
+            <option value="shopping" className="bg-[#141622]">Shopping</option>
+            <option value="email" className="bg-[#141622]">Email</option>
+            <option value="other" className="bg-[#141622]">Other</option>
+          </select>
+        </div>
+
+        {/* Strength filter */}
+        <div className="relative">
+          <select
+            value={strengthFilter}
+            onChange={e => setStrengthFilter(e.target.value as PasswordStrength | 'all')}
+            className="input-field w-auto text-xs font-semibold py-2.5 cursor-pointer"
+          >
+            <option value="all" className="bg-[#141622]">All Strengths</option>
+            <option value="strong" className="bg-[#141622]">Strong</option>
+            <option value="medium" className="bg-[#141622]">Medium</option>
+            <option value="weak" className="bg-[#141622]">Weak</option>
+          </select>
+        </div>
+
+        {/* Sort selector */}
+        <div className="relative">
+          <select
+            value={sort}
+            onChange={e => setSort(e.target.value as typeof sort)}
+            className="input-field w-auto text-xs font-semibold py-2.5 cursor-pointer"
+          >
+            <option value="name-az" className="bg-[#141622]">Sort: A–Z</option>
+            <option value="name-za" className="bg-[#141622]">Sort: Z–A</option>
+            <option value="newest" className="bg-[#141622]">Newest First</option>
+            <option value="oldest" className="bg-[#141622]">Oldest First</option>
+            <option value="last-used" className="bg-[#141622]">Recently Used</option>
+          </select>
+        </div>
+
+        {/* Favorites button */}
+        <button
+          onClick={() => setFavOnly(v => !v)}
+          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl border text-xs font-bold transition-all ${
+            favOnly
+              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-lg shadow-amber-500/10'
+              : 'bg-white/5 text-slate-400 border-white/10 hover:border-amber-500/40 hover:text-amber-400'
+          }`}
+        >
+          <Heart className={`w-4 h-4 ${favOnly ? 'fill-amber-400 text-amber-400' : ''}`} />
+          <span>Favorites</span>
+        </button>
+      </div>
+
+      {/* Grid Display */}
+      {filtered.length === 0 ? (
+        <div className="bg-[#121420]/60 border border-white/10 rounded-2xl flex flex-col items-center justify-center py-20 px-4 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-4 text-indigo-400">
+            <KeyRound className="w-8 h-8" />
+          </div>
+          <h3 className="text-white font-bold text-lg mb-1.5">
+            {credentials.length === 0 ? 'No Passwords Saved' : 'No Matching Credentials'}
+          </h3>
+          <p className="text-slate-400 text-xs max-w-sm">
+            {credentials.length === 0
+              ? 'Add your first password to secure your credentials in your encrypted vault.'
+              : 'Try clearing search or switching filter categories.'
+            }
+          </p>
+          {credentials.length === 0 && (
+            <button
+              onClick={() => setShowModal(true)}
+              className="btn-primary mt-5"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Password</span>
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          {filtered.map(c => (
+            <PasswordCard
+              key={c.id}
+              credential={c}
+              onEdit={handleEdit}
+              onRefresh={load}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Add/Edit Modal */}
+      {showModal && (
+        <AddPassword
+          credential={editTarget}
+          onClose={handleCloseModal}
+          onSaved={load}
+        />
+      )}
+    </div>
+  )
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/components/Passwords/PasswordDetail.tsx
+ACTION: Created
+================================================================================
+// PasswordDetail.tsx — shown as a side panel or modal for full credential view
+import React from 'react'
+import { X, Globe, User, Mail, Clock, Tag, FileText, Copy, Check, Eye, EyeOff } from 'lucide-react'
+import type { Credential } from '../../types'
+import { evaluatePasswordStrength } from '../../services/passwordUtils'
+
+interface PasswordDetailProps {
+  credential: Credential
+  onClose:    () => void
+}
+
+export default function PasswordDetail({ credential, onClose }: PasswordDetailProps): React.ReactElement {
+  const [showPass, setShowPass] = React.useState(false)
+  const [copied, setCopied]     = React.useState(false)
+
+  const strength = evaluatePasswordStrength(credential.password)
+  const strengthColor =
+    strength.strength === 'strong' ? '#22c55e' :
+    strength.strength === 'medium' ? '#f59e0b' : '#ef4444'
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(credential.password)
+    setCopied(true)
+    setTimeout(() => {
+      navigator.clipboard.writeText('')
+      setCopied(false)
+    }, 30_000)
+  }
+
+  return (
+    <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal-content">
+        <div className="flex items-center justify-between p-5 border-b border-[#2a2a2a]">
+          <h2 className="text-lg font-semibold text-[#f1f5f9]">{credential.website_name}</h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg text-[#475569] hover:text-[#f1f5f9] hover:bg-[#2a2a2a]">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          <DetailRow icon={<Globe className="w-4 h-4 text-[#475569]" />} label="Domain" value={credential.domain} />
+          {credential.username && <DetailRow icon={<User className="w-4 h-4 text-[#475569]" />} label="Username" value={credential.username} />}
+          {credential.email    && <DetailRow icon={<Mail className="w-4 h-4 text-[#475569]" />} label="Email"    value={credential.email} />}
+          <DetailRow icon={<Tag  className="w-4 h-4 text-[#475569]" />} label="Category" value={credential.category} capitalize />
+          {credential.last_used && (
+            <DetailRow icon={<Clock className="w-4 h-4 text-[#475569]" />} label="Last Used"
+              value={new Date(credential.last_used).toLocaleString()} />
+          )}
+
+          {/* Password row */}
+          <div>
+            <p className="text-xs font-medium text-[#475569] mb-1.5">Password</p>
+            <div className="flex items-center gap-2 bg-[#0f0f0f] rounded-lg px-3 py-2.5">
+              <span className="flex-1 text-sm font-mono text-[#f1f5f9]">
+                {showPass ? credential.password : '••••••••••••••••'}
+              </span>
+              <button onClick={() => setShowPass(v => !v)} className="text-[#475569] hover:text-[#94a3b8]">
+                {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+              <button onClick={handleCopy} className={`${copied ? 'text-[#22c55e]' : 'text-[#475569] hover:text-[#94a3b8]'}`}>
+                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              </button>
+            </div>
+            <div className="mt-1.5 flex items-center gap-2">
+              <div className="flex-1 h-1 bg-[#2a2a2a] rounded-full">
+                <div className="h-full rounded-full" style={{ width: `${strength.score}%`, backgroundColor: strengthColor }} />
+              </div>
+              <span className="text-xs capitalize" style={{ color: strengthColor }}>{strength.strength}</span>
+            </div>
+          </div>
+
+          {credential.notes && (
+            <div>
+              <p className="text-xs font-medium text-[#475569] mb-1.5 flex items-center gap-1.5">
+                <FileText className="w-4 h-4" /> Notes
+              </p>
+              <p className="text-sm text-[#94a3b8] bg-[#0f0f0f] rounded-lg p-3 whitespace-pre-wrap">
+                {credential.notes}
+              </p>
+            </div>
+          )}
+
+          <div className="text-xs text-[#475569] pt-2 border-t border-[#2a2a2a] space-y-1">
+            <p>Created: {new Date(credential.date_created).toLocaleString()}</p>
+            <p>Modified: {new Date(credential.date_modified).toLocaleString()}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function DetailRow({
+  icon, label, value, capitalize,
+}: {
+  icon: React.ReactNode
+  label: string
+  value: string
+  capitalize?: boolean
+}): React.ReactElement {
+  return (
+    <div>
+      <p className="text-xs font-medium text-[#475569] mb-1 flex items-center gap-1.5">{icon}{label}</p>
+      <p className={`text-sm text-[#f1f5f9] ${capitalize ? 'capitalize' : ''}`}>{value}</p>
+    </div>
+  )
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/components/Passwords/PasswordCard.tsx
+ACTION: Created
+================================================================================
+import React, { useState, useCallback } from 'react'
+import {
+  Star, Copy, Edit2, Trash2, Globe, Check, Eye, EyeOff, ShieldCheck, ShieldAlert
+} from 'lucide-react'
+import { evaluatePasswordStrength } from '../../services/passwordUtils'
+import type { Credential } from '../../types'
+
+// ─── Category badge styles ────────────────────────────────────────────────
+const CATEGORY_STYLES: Record<string, { bg: string; text: string; border: string }> = {
+  social:   { bg: 'bg-blue-500/10',   text: 'text-blue-400',   border: 'border-blue-500/25' },
+  banking:  { bg: 'bg-emerald-500/10',text: 'text-emerald-400',border: 'border-emerald-500/25' },
+  work:     { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/25' },
+  shopping: { bg: 'bg-amber-500/10',  text: 'text-amber-400',  border: 'border-amber-500/25' },
+  email:    { bg: 'bg-sky-500/10',    text: 'text-sky-400',    border: 'border-sky-500/25' },
+  other:    { bg: 'bg-slate-500/10',  text: 'text-slate-400',  border: 'border-slate-500/25' },
+}
+
+const CLIPBOARD_TIMEOUT = 30_000 // 30 seconds
+
+interface PasswordCardProps {
+  credential: Credential
+  onEdit:    (c: Credential) => void
+  onRefresh: () => void
+}
+
+export default function PasswordCard({
+  credential,
+  onEdit,
+  onRefresh,
+}: PasswordCardProps): React.ReactElement {
+  const [copied, setCopied]         = useState(false)
+  const [showPass, setShowPass]     = useState(false)
+  const [delConfirm, setDelConfirm] = useState(false)
+  const [imgError, setImgError]     = useState(false)
+
+  const copyTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  const strength = evaluatePasswordStrength(credential.password)
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(credential.password)
+      setCopied(true)
+
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current)
+      copyTimerRef.current = setTimeout(async () => {
+        await navigator.clipboard.writeText('')  // Clear clipboard
+        setCopied(false)
+      }, CLIPBOARD_TIMEOUT)
+    } catch {
+      // Clipboard fallback
+    }
+  }, [credential.password])
+
+  const handleFavorite = useCallback(async () => {
+    await window.electronAPI.db.toggleFavoriteCredential(credential.id)
+    onRefresh()
+  }, [credential.id, onRefresh])
+
+  const handleDelete = useCallback(async () => {
+    if (!delConfirm) {
+      setDelConfirm(true)
+      setTimeout(() => setDelConfirm(false), 3000)
+      return
+    }
+    await window.electronAPI.db.deleteCredential(credential.id)
+    onRefresh()
+  }, [delConfirm, credential.id, onRefresh])
+
+  const faviconUrl = credential.favicon_url ||
+    `https://www.google.com/s2/favicons?domain=${credential.domain}&sz=64`
+
+  const catStyle = CATEGORY_STYLES[credential.category] ?? CATEGORY_STYLES.other
+  const initial = (credential.website_name[0] || 'W').toUpperCase()
+
+  return (
+    <div className="bg-[#141622]/80 backdrop-blur-xl border border-white/10 hover:border-indigo-500/40 rounded-2xl p-5 card-hover flex flex-col justify-between relative group shadow-xl shadow-black/40 overflow-hidden">
+      {/* Glow highlight on hover */}
+      <div className="absolute -right-12 -top-12 w-28 h-28 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all pointer-events-none" />
+
+      <div>
+        {/* Header row: Favicon, Title, Favorite Button */}
+        <div className="flex items-start gap-3.5 mb-4">
+          <div className="w-11 h-11 rounded-xl bg-[#0e1017] border border-white/10 flex items-center justify-center flex-shrink-0 shadow-inner overflow-hidden relative">
+            {!imgError ? (
+              <img
+                src={faviconUrl}
+                alt=""
+                className="w-6 h-6 object-contain"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <span className="text-base font-extrabold text-gradient">
+                {initial}
+              </span>
+            )}
+          </div>
+
+          <div className="flex-1 min-w-0 pr-2">
+            <h3 className="font-bold text-white text-base truncate tracking-tight group-hover:text-indigo-300 transition-colors">
+              {credential.website_name}
+            </h3>
+            <div className="flex items-center gap-1.5 mt-0.5 text-xs text-slate-400">
+              <Globe className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+              <span className="truncate">{credential.domain}</span>
+            </div>
+          </div>
+
+          <button
+            onClick={handleFavorite}
+            className="flex-shrink-0 p-2 rounded-xl hover:bg-white/10 transition-colors text-slate-400 hover:text-amber-400"
+            title={credential.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Star
+              className={`w-4 h-4 transition-all ${
+                credential.is_favorite ? 'fill-amber-400 text-amber-400 scale-110 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]' : ''
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Username / Email Row */}
+        <div className="mb-4 bg-white/[0.03] border border-white/5 rounded-xl px-3.5 py-2.5">
+          <span className="text-xs text-slate-400 block font-mono truncate">
+            {credential.email || credential.username || 'No username specified'}
+          </span>
+        </div>
+
+        {/* Category & Strength Badges */}
+        <div className="flex items-center gap-2 mb-4 flex-wrap">
+          <span className={`badge ${catStyle.bg} ${catStyle.text} ${catStyle.border}`}>
+            {credential.category}
+          </span>
+          <span className={`badge ${
+            strength.strength === 'strong' ? 'strength-strong' :
+            strength.strength === 'medium' ? 'strength-medium' : 'strength-weak'
+          }`}>
+            {strength.strength}
+          </span>
+        </div>
+
+        {/* Password Preview Bar */}
+        <div className="flex items-center gap-2 bg-[#0d0e16] border border-white/10 rounded-xl px-3.5 py-2.5 mb-4 group/pass">
+          <span className="flex-1 text-xs font-mono text-slate-300 truncate tracking-wider">
+            {showPass ? credential.password : '••••••••••••••••'}
+          </span>
+          <button
+            onClick={() => setShowPass(v => !v)}
+            className="text-slate-400 hover:text-indigo-400 transition-colors p-1 flex-shrink-0"
+            title={showPass ? 'Hide password' : 'Show password'}
+          >
+            {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Action Footer Buttons */}
+      <div className="flex items-center gap-2 pt-3 border-t border-white/5">
+        <button
+          onClick={handleCopy}
+          className={`flex-1 flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
+            copied
+              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-lg shadow-emerald-500/10'
+              : 'bg-white/5 hover:bg-indigo-600/20 text-slate-300 hover:text-white border border-white/10 hover:border-indigo-500/30'
+          }`}
+        >
+          {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+          <span>{copied ? 'Copied (30s)' : 'Copy Password'}</span>
+        </button>
+
+        <button
+          onClick={() => onEdit(credential)}
+          className="p-2 rounded-xl text-slate-400 hover:text-indigo-300 hover:bg-indigo-500/10 border border-transparent hover:border-indigo-500/20 transition-all"
+          title="Edit Credential"
+        >
+          <Edit2 className="w-4 h-4" />
+        </button>
+
+        <button
+          onClick={handleDelete}
+          className={`p-2 rounded-xl transition-all border ${
+            delConfirm
+              ? 'text-rose-400 bg-rose-500/20 border-rose-500/40'
+              : 'text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border-transparent hover:border-rose-500/20'
+          }`}
+          title={delConfirm ? 'Click again to confirm delete' : 'Delete Credential'}
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+================================================================================
+TIMESTAMP: 2026-07-28 14:00:00
+FILE PATH: src/components/Passwords/AddPassword.tsx
+ACTION: Created
+================================================================================
+import React, { useState, useEffect, useCallback } from 'react'
+import {
+  X, Eye, EyeOff, Copy, Globe, Wand2, Check, Lock, Tag, FileText, User, Mail, ShieldAlert
+} from 'lucide-react'
+import {
+  evaluatePasswordStrength,
+  generatePassword,
+} from '../../services/passwordUtils'
+import { useAppStore } from '../../store/appStore'
+import type { Credential, CredentialCategory, CredentialFormData } from '../../types'
+
+// ─── Default generator settings ───────────────────────────────────────────
+const DEFAULT_GEN = { length: 20, uppercase: true, lowercase: true, numbers: true, symbols: true, excludeSimilar: false }
+
+const CATEGORIES: CredentialCategory[] = ['social', 'banking', 'work', 'shopping', 'email', 'other']
+
+interface AddPasswordProps {
+  credential?: Credential   // Edit mode if provided
+  prefillPassword?: string
+  onClose:   () => void
+  onSaved:   () => void
+}
+
+export default function AddPassword({
+  credential,
+  prefillPassword,
+  onClose,
+  onSaved,
+}: AddPasswordProps): React.ReactElement {
+  const { encryptionKey } = useAppStore()
+  const isEdit = Boolean(credential)
+
+  const [form, setForm] = useState<CredentialFormData>({
+    website_name: credential?.website_name ?? '',
+    domain:       credential?.domain       ?? '',
+    username:     credential?.username     ?? '',
+    email:        credential?.email        ?? '',
+    password:     prefillPassword ?? credential?.password ?? '',
+    category:     credential?.category     ?? 'other',
+    notes:        credential?.notes        ?? '',
+    is_favorite:
